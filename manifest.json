@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "patcher": {
+    "version": "1.0.0",
+    "url": "",
+    "sha256": ""
+  },
+  "translation": {
+    "version": "4.08.26",
+    "files": [
+      {
+        "name": "~RU_PATCH_1_P.pak",
+        "url": "",
+        "sha256": ""
+      },
+      {
+        "name": "~RU_QFONT.pak",
+        "url": "",
+        "sha256": ""
+      }
+    ]
+  }
+}
