@@ -1,23 +1,23 @@
 {
-    "schemaVersion":  1,
-    "patcher":  {
-                    "version":  "1.0.4",
-                    "url":  "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-1.0.4/IceAndFlamePatcher.exe",
-                    "sha256":  "1631855cc23db5597c4e0f7dad7eb977fd1a69e95ee3b10a600d8a67a0cbbdf2"
-                },
-    "translation":  {
-                        "version":  "4.09.26",
-                        "files":  [
-                                      {
-                                          "name":  "~RU_PATCH_1_P.pak",
-                                          "url":  "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/translation-4.09.26/RU_PATCH_1_P.pak",
-                                          "sha256":  "7c0dad407e111bcba5946e7f01aa98a349f7a93fa2163061d90e29272335abf1"
-                                      },
-                                      {
-                                          "name":  "~RU_QFONT.pak",
-                                          "url":  "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/translation-4.09.26/RU_QFONT.pak",
-                                          "sha256":  "6b564af9e47a3b7a4f43fb8ee449ac0c8a7b2c485e5828494dc2deb51d1119ef"
-                                      }
-                                  ]
-                    }
+  "schemaVersion": 1,
+  "patcher": {
+    "version": "1.0.5",
+    "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-1.0.5/IceAndFlamePatcher.exe",
+    "sha256": "ed4edaeb598cb257cfd1c287ca68d83df32af2887bf980bfaddbc3ecb357dd4f"
+  },
+  "translation": {
+    "version": "4.09.26",
+    "files": [
+      {
+        "name": "~RU_PATCH_1_P.pak",
+        "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/translation-4.09.26/RU_PATCH_1_P.pak",
+        "sha256": "7c0dad407e111bcba5946e7f01aa98a349f7a93fa2163061d90e29272335abf1"
+      },
+      {
+        "name": "~RU_QFONT.pak",
+        "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/translation-4.09.26/RU_QFONT.pak",
+        "sha256": "6b564af9e47a3b7a4f43fb8ee449ac0c8a7b2c485e5828494dc2deb51d1119ef"
+      }
+    ]
+  }
 }
