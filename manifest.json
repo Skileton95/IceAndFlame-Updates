@@ -6,16 +6,16 @@
                     "sha256":  "82f659be5015418083ff42299cfae0d531097b6a271dfea605815886fddfa593"
                 },
     "translation":  {
-                        "version":  "4.09.26",
+                        "version":  "4.09.28",
                         "files":  [
                                       {
                                           "name":  "~RU_PATCH_1_P.pak",
-                                          "url":  "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/translation-4.09.26/RU_PATCH_1_P.pak",
-                                          "sha256":  "7c0dad407e111bcba5946e7f01aa98a349f7a93fa2163061d90e29272335abf1"
+                                          "url":  "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/translation-4.09.28/RU_PATCH_1_P.pak",
+                                          "sha256":  "151fc77ed79cdf85273d465f89f5b6cd050eee1e9d8b7c1731d9eb302e006deb"
                                       },
                                       {
                                           "name":  "~RU_QFONT.pak",
-                                          "url":  "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/translation-4.09.26/RU_QFONT.pak",
+                                          "url":  "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/translation-4.09.28/RU_QFONT.pak",
                                           "sha256":  "6b564af9e47a3b7a4f43fb8ee449ac0c8a7b2c485e5828494dc2deb51d1119ef"
                                       }
                                   ]
