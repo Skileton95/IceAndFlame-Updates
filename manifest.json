@@ -1,9 +1,9 @@
 {
     "schemaVersion":  1,
     "patcher":  {
-                    "version":  "1.0.18",
-                    "url":  "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-1.0.18/IceAndFlamePatcher.exe",
-                    "sha256":  "04931e0381b7664368f8a1ae11aafc36be3dc5a755d46902d0fe842189c9e658"
+                    "version":  "1.0.19",
+                    "url":  "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-1.0.19/IceAndFlamePatcher.exe",
+                    "sha256":  "a20851753bcfbd16d05ddcf14fc5feb6bb4c60796b3667d3ac610351ae6ff5b1"
                 },
     "translation":  {
                         "version":  "4.09.28",
