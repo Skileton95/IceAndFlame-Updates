@@ -135,8 +135,15 @@ try {
     Copy-Item -LiteralPath $fontSource -Destination $fontAsset
 
     Write-Step "Publishing GitHub Release $tag"
-    & gh release view $tag --repo $Repo --json tagName *> $null
-    $releaseExists = ($LASTEXITCODE -eq 0)
+    $previousErrorActionPreference = $ErrorActionPreference
+    try {
+        $ErrorActionPreference = "Continue"
+        & gh release view $tag --repo $Repo --json tagName 1>$null 2>$null
+        $releaseExists = ($LASTEXITCODE -eq 0)
+    }
+    finally {
+        $ErrorActionPreference = $previousErrorActionPreference
+    }
 
     if ($releaseExists) {
         if (-not $Force) { throw "Release $tag already exists." }
