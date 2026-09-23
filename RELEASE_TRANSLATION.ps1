@@ -172,7 +172,7 @@ Write-Host "  RU_PATCH_1_P.pak  $patchSha"
 Write-Host "  RU_QFONT.pak      $fontSha"
 
 $tag = "translation-$Version"
-$title = "Русификатор $Version"
+$title = "Russian Translation $Version"
 $releaseBaseUrl = "https://github.com/$Repo/releases/download/$tag"
 
 $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ("IceAndFlame-Translation-" + [guid]::NewGuid().ToString("N"))
@@ -198,7 +198,7 @@ try {
         Invoke-Native gh release upload $tag $patchAsset $fontAsset --repo $Repo --clobber
     }
     else {
-        Invoke-Native gh release create $tag $patchAsset $fontAsset --repo $Repo --target $Branch --title $title --notes "Русификатор World of Jade Dynasty $Version."
+        Invoke-Native gh release create $tag $patchAsset $fontAsset --repo $Repo --target $Branch --title $title --notes "World of Jade Dynasty Russian translation $Version."
     }
 
     Write-Step "Verifying release assets"
