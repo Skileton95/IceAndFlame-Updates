@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/remove-all-releases.yml"
+  workflow_dispatch:
 
 permissions:
   contents: write
