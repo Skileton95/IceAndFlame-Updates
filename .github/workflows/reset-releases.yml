@@ -1,0 +1,41 @@
+name: Reset update repository releases
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/reset-releases.yml"
+permissions:
+  contents: write
+  actions: write
+jobs:
+  reset:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Delete all releases tags and completed runs
+        shell: bash
+        run: |
+          set -euo pipefail
+          repo="${{ github.repository }}"
+
+          gh api --paginate "repos/$repo/releases?per_page=100" --jq '.[].id' | while read -r id; do
+            if [ -n "$id" ]; then
+              gh api --method DELETE "repos/$repo/releases/$id" || true
+            fi
+          done
+
+          git ls-remote --tags origin | awk '{print $2}' | sed 's#refs/tags/##' | sed 's#\^{}##' | sort -u | while read -r tag; do
+            if [ -n "$tag" ]; then
+              git push origin ":refs/tags/$tag" || true
+            fi
+          done
+
+          gh api --paginate "repos/$repo/actions/runs?per_page=100" --jq '.workflow_runs[] | select(.id != ${{ github.run_id }}) | select(.status == "completed") | .id' | while read -r id; do
+            if [ -n "$id" ]; then
+              gh api --method DELETE "repos/$repo/actions/runs/$id" || true
+            fi
+          done
