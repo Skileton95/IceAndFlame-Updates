@@ -1,22 +1,22 @@
 {
   "schemaVersion": 1,
   "patcher": {
-    "version": "1.0.121",
-    "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-1.0.121/IceAndFlamePatcher.exe",
-    "sha256": "210385d3b453ceb515832a6c670db14700ca9f4cb78eac39db2380f567505b12"
+    "version": "0.0.0",
+    "url": "",
+    "sha256": ""
   },
   "translation": {
-    "version": "4.09.29",
+    "version": "0.0.0",
     "files": [
       {
         "name": "~RU_PATCH_1_P.pak",
-        "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/translation-4.09.29/RU_PATCH_1_P.pak",
-        "sha256": "73cf03a7b2b9ed15670c45a2c30135c4e12b33e14e682f2b048a1ed85c610c7d"
+        "url": "",
+        "sha256": ""
       },
       {
         "name": "~RU_QFONT.pak",
-        "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/translation-4.09.29/RU_QFONT.pak",
-        "sha256": "6b564af9e47a3b7a4f43fb8ee449ac0c8a7b2c485e5828494dc2deb51d1119ef"
+        "url": "",
+        "sha256": ""
       }
     ]
   }
