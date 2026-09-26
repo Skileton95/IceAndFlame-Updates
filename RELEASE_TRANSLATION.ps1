@@ -11,8 +11,6 @@ $ErrorActionPreference = "Stop"
 $Repo = "Skileton95/IceAndFlame-Updates"
 $Branch = "main"
 $PackageDir = Join-Path $PSScriptRoot "package"
-$LocalManifestPath = Join-Path $PSScriptRoot "manifest.json"
-
 $RequiredFiles = @(
     @{
         InstallName = "~RU_PATCH_1_P.pak"
@@ -272,9 +270,6 @@ try {
     if ($LASTEXITCODE -ne 0) {
         throw "Unable to update manifest.json on GitHub."
     }
-
-    # Keep the local checkout in sync with the manifest just published.
-    [IO.File]::WriteAllText($LocalManifestPath, $json, [Text.UTF8Encoding]::new($false))
 
     Write-Step "Checking public manifest.json"
     $verified = $false
