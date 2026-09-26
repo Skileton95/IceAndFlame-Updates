@@ -277,7 +277,7 @@ try {
     for ($attempt = 1; $attempt -le 20; $attempt++) {
         try {
             $cacheBust = [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()
-            $publicUrl = "https://raw.githubusercontent.com/$Repo/$Branch/$ManifestName?ts=$cacheBust"
+            $publicUrl = "https://raw.githubusercontent.com/$Repo/$Branch/${ManifestName}?ts=$cacheBust"
             $publicManifest = Invoke-RestMethod -Uri $publicUrl -Headers @{ "Cache-Control" = "no-cache" }
 
             if ([string]$publicManifest.translation.version -ne $Version) {
