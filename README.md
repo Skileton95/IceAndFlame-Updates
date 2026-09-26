@@ -1,89 +1,89 @@
 # IceAndFlame-Updates
 
-Публичный репозиторий обновлений для **ICE AND FLAME — русификатора World of Jade Dynasty**.
+Публичный репозиторий обновлений **ICE AND FLAME**.
 
-Здесь хранятся:
+## Каналы
 
-- `manifest.json` — единый манифест патчера и русификатора;
-- `RELEASE_TRANSLATION.cmd` / `RELEASE_TRANSLATION.ps1` — публикация русификатора из локальной папки `package`;
-- GitHub Releases — готовые версии патчера и русификатора.
+- `manifest.json` — Stable.
+- `manifest-beta.json` — Beta.
 
-## Публикация новой версии русификатора
+Патчер и русификатор имеют независимые версии.
 
-1. Обновите локальный репозиторий `IceAndFlame-Updates`.
-2. Положите актуальные файлы в папку `package`:
+## Публикация русификатора
 
-```text
-package\~RU_PATCH_1_P.pak
-package\~RU_QFONT.pak
-```
-
-Допускаются также имена без тильды:
+Положите в `package\`:
 
 ```text
-package\RU_PATCH_1_P.pak
-package\RU_QFONT.pak
+~RU_PATCH_1_P.pak
+~RU_QFONT.pak
 ```
 
-3. Запустите:
+Допускаются имена без тильды:
 
 ```text
-RELEASE_TRANSLATION.cmd
+RU_PATCH_1_P.pak
+RU_QFONT.pak
 ```
 
-4. Введите новую версию, например:
+Stable:
+
+```bat
+RELEASE_TRANSLATION.cmd 0.0.2
+```
+
+Beta:
+
+```bat
+RELEASE_TRANSLATION.cmd 0.0.2 -Channel beta
+```
+
+С минимальной версией патчера:
+
+```bat
+RELEASE_TRANSLATION.cmd 0.0.2 -MinPatcherVersion 0.0.6
+```
+
+Release Notes можно передать параметром:
+
+```bat
+RELEASE_TRANSLATION.cmd 0.0.2 -ReleaseNotes "Исправлены строки интерфейса и квестов."
+```
+
+или положить текст в:
 
 ```text
-0.0.1
+package\RELEASE_NOTES.txt
 ```
 
-Можно передать версию сразу:
+Повторная публикация существующей версии:
 
-```text
-RELEASE_TRANSLATION.cmd 0.0.1
+```bat
+RELEASE_TRANSLATION.cmd 0.0.2 -Force
 ```
 
-Скрипт:
+Скрипт сам:
 
-- проверит авторизацию GitHub CLI;
-- прочитает актуальный `manifest.json` прямо с GitHub;
-- проверит структуру секции `translation`;
+- проверит GitHub CLI;
+- прочитает актуальный Stable/Beta манифест;
 - найдёт оба `.pak`;
 - посчитает SHA-256;
-- создаст Release `translation-X.Y.Z`;
-- загрузит `RU_PATCH_1_P.pak` и `RU_QFONT.pak`;
-- проверит наличие обоих файлов в Release;
-- обновит только секцию `translation` в `manifest.json`;
-- проверит публичный `manifest.json` после публикации.
+- создаст соответствующий GitHub Release;
+- загрузит файлы;
+- обновит только секцию `translation`;
+- запишет Release Notes и `minPatcherVersion`;
+- проверит публичный манифест.
 
-Секция `patcher` при выпуске русификатора не изменяется.
+Файлы из `package\` в Git не добавляются.
 
-## Повторная публикация той же версии
+## Зеркала
 
-Обычный запуск не даст случайно перезаписать уже существующую версию.
-
-Если повторная публикация действительно нужна:
-
-```text
-RELEASE_TRANSLATION.cmd 0.0.1 -Force
-```
-
-Это перезапишет assets существующего Release и заново обновит SHA-256 в манифесте.
+Каждый файл поддерживает массив `urls`. Первый `url` остаётся основным, дополнительные адреса можно добавить в `urls`. Патчер автоматически повторяет загрузку и переключается на следующий адрес при ошибке.
 
 ## Требования
 
-Нужен GitHub CLI `gh` с выполненной авторизацией:
+Нужен GitHub CLI:
 
-```text
+```bat
 gh auth login
-```
-
-Проверить:
-
-```text
 gh auth status
 ```
-
-## Важно
-
-Файлы из `package\` не добавляются в Git. Они используются только как локальный источник для создания Release.
