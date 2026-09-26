@@ -7,12 +7,12 @@
     "publicKeyId": ""
   },
   "patcher": {
-    "version": "0.0.10",
-    "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-0.0.10/IceAndFlamePatcher.exe",
+    "version": "0.0.11",
+    "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-0.0.11/IceAndFlamePatcher.exe",
     "urls": [],
-    "sha256": "e3b59c349b5768437eea1a6b44afcd9ebbc19cd94b8c8f8cc4d7d26892fc2fef",
+    "sha256": "b629cc3550f00f1f15a9be58c794bcbc2dcb8dbda4c5813d835c4eaaa2bdbdfe",
     "mandatory": false,
-    "releaseNotes": "0.0.10\r\n\r\n• Тестовый релиз для проверки нового механизма самообновления 0.0.9 → 0.0.10.\r\n• Функциональные изменения минимальны: основная цель релиза — проверить загрузку, замену EXE, повторную проверку SHA-256, запуск новой версии и получение WebUI health marker.\r\n• При неудачном запуске новой версии должен автоматически сработать rollback на предыдущий EXE.\r\n• Native updater helper и отдельный updater-журнал из 0.0.9 сохранены без изменения логики.",
+    "releaseNotes": "0.0.11\r\n\r\n• Убрана белая вспышка при запуске патчера: WebView2 остаётся скрытым до подтверждения готовности интерфейса.\r\n• Добавлен нативный тёмный splash-экран ICE AND FLAME с индикатором запуска.\r\n• Фон WebView2 принудительно установлен в цвет интерфейса, поэтому даже внутренняя инициализация браузера больше не показывает белый кадр.\r\n• Подготовка встроенного WebUI вынесена с UI-потока, чтобы окно и splash появлялись без зависания.\r\n• WebUI больше не переписывается на диск при каждом запуске. Для уже подготовленной версии используются готовые index.html, styles.css и app.js.\r\n• Извлечение WebUI стало транзакционным: сначала временные файлы, затем замена и маркер готовности.\r\n• При восстановлении повреждённого WebUI splash показывает отдельное состояние «Восстановление интерфейса».",
     "rolloutPercent": 100,
     "blockedVersions": []
   },
