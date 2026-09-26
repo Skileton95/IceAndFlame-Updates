@@ -7,12 +7,12 @@
     "publicKeyId": ""
   },
   "patcher": {
-    "version": "0.0.9",
-    "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-0.0.9/IceAndFlamePatcher.exe",
+    "version": "0.0.10",
+    "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-0.0.10/IceAndFlamePatcher.exe",
     "urls": [],
-    "sha256": "b103c9beb614656cb9058dc06f5bb8825fd13074b9d9cfad35848e51a4507439",
+    "sha256": "e3b59c349b5768437eea1a6b44afcd9ebbc19cd94b8c8f8cc4d7d26892fc2fef",
     "mandatory": false,
-    "releaseNotes": "0.0.9\r\n\r\n• Исправлено самообновление патчера, при котором после нажатия «Обновить» приложение могло закрыться и больше не запуститься.\r\n• Полностью удалена зависимость self-update от скрытого PowerShell-скрипта.\r\n• Обновление теперь выполняет отдельная временная копия самого патчера в специальном native helper-режиме.\r\n• Helper запускается до single-instance mutex, ждёт завершения основного патчера и только после этого заменяет EXE.\r\n• После замены повторно проверяется SHA-256 установленного EXE.\r\n• Новый патчер запускается с health marker и должен подтвердить успешную загрузку WebUI.\r\n• Если новая версия не стартовала или не прислала health marker, helper завершает её, возвращает backup и автоматически запускает предыдущую версию.\r\n• Добавлен отдельный updater-журнал в папке logs, чтобы сбой самообновления больше не происходил «молча».\r\n• Все аргументы updater передаются через ProcessStartInfo.ArgumentList — пути с пробелами и кириллицей больше не зависят от quoting PowerShell/cmd.",
+    "releaseNotes": "0.0.10\r\n\r\n• Тестовый релиз для проверки нового механизма самообновления 0.0.9 → 0.0.10.\r\n• Функциональные изменения минимальны: основная цель релиза — проверить загрузку, замену EXE, повторную проверку SHA-256, запуск новой версии и получение WebUI health marker.\r\n• При неудачном запуске новой версии должен автоматически сработать rollback на предыдущий EXE.\r\n• Native updater helper и отдельный updater-журнал из 0.0.9 сохранены без изменения логики.",
     "rolloutPercent": 100,
     "blockedVersions": []
   },
