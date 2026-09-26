@@ -11,6 +11,18 @@ $ErrorActionPreference = "Stop"
 $Repo = "Skileton95/IceAndFlame-Updates"
 $Branch = "main"
 $PackageDir = Join-Path $PSScriptRoot "package"
+$LocalManifestPath = Join-Path $PSScriptRoot "manifest.json"
+
+$RequiredFiles = @(
+    @{
+        InstallName = "~RU_PATCH_1_P.pak"
+        ReleaseName = "RU_PATCH_1_P.pak"
+    },
+    @{
+        InstallName = "~RU_QFONT.pak"
+        ReleaseName = "RU_QFONT.pak"
+    }
+)
 
 function Write-Step {
     param([string]$Message)
@@ -34,14 +46,19 @@ function Invoke-Gh {
 }
 
 function Resolve-PackageFile {
-    param([string]$InstallName, [string]$ReleaseName)
+    param(
+        [string]$InstallName,
+        [string]$ReleaseName
+    )
+
     foreach ($name in @($InstallName, $ReleaseName)) {
         $candidate = Join-Path $PackageDir $name
         if (Test-Path -LiteralPath $candidate -PathType Leaf) {
             return (Resolve-Path -LiteralPath $candidate).Path
         }
     }
-    throw "Missing translation file. Put $InstallName or $ReleaseName into $PackageDir."
+
+    throw "Missing translation file. Put '$InstallName' or '$ReleaseName' into '$PackageDir'."
 }
 
 function Get-Sha256Lower {
@@ -59,14 +76,45 @@ function Read-RemoteManifest {
     if ($LASTEXITCODE -ne 0) {
         throw "Unable to read manifest.json from GitHub."
     }
+
     $response = $responseJson | ConvertFrom-Json
     $base64 = ([string]$response.content) -replace "\s", ""
     $bytes = [Convert]::FromBase64String($base64)
     $text = [Text.Encoding]::UTF8.GetString($bytes)
-    return @{ Sha = [string]$response.sha; Manifest = ($text | ConvertFrom-Json) }
+
+    return @{
+        Sha = [string]$response.sha
+        Manifest = ($text | ConvertFrom-Json)
+    }
 }
 
-Write-Host "ICE AND FLAME - translation publisher" -ForegroundColor Green
+function Assert-ManifestShape {
+    param($Manifest)
+
+    if ($null -eq $Manifest.patcher) {
+        throw "manifest.json does not contain the 'patcher' section."
+    }
+
+    if ($null -eq $Manifest.translation) {
+        throw "manifest.json does not contain the 'translation' section."
+    }
+
+    if ($null -eq $Manifest.translation.files) {
+        throw "manifest.json does not contain translation.files."
+    }
+
+    foreach ($required in $RequiredFiles) {
+        $match = @($Manifest.translation.files | Where-Object { [string]$_.name -eq [string]$required.InstallName })
+        if ($match.Count -ne 1) {
+            throw "manifest.json must contain exactly one entry named '$($required.InstallName)'."
+        }
+    }
+}
+
+Write-Host ""
+Write-Host "==========================================" -ForegroundColor DarkGray
+Write-Host " ICE AND FLAME - RELEASE TRANSLATION" -ForegroundColor Green
+Write-Host "==========================================" -ForegroundColor DarkGray
 
 Require-Command "gh"
 
@@ -80,143 +128,200 @@ if (-not (Test-Path -LiteralPath $PackageDir)) {
     New-Item -ItemType Directory -Path $PackageDir | Out-Null
 }
 
-Write-Step "Locating package files"
-$patchSource = Resolve-PackageFile "~RU_PATCH_1_P.pak" "RU_PATCH_1_P.pak"
-$fontSource = Resolve-PackageFile "~RU_QFONT.pak" "RU_QFONT.pak"
-
-$patchInfo = Get-Item -LiteralPath $patchSource
-$fontInfo = Get-Item -LiteralPath $fontSource
-if ($patchInfo.Length -lt 1MB) { throw "RU_PATCH_1_P.pak looks too small." }
-if ($fontInfo.Length -lt 1MB) { throw "RU_QFONT.pak looks too small." }
-
-Write-Host ("  PATCH: {0:N1} MB" -f ($patchInfo.Length / 1MB))
-Write-Host ("  QFONT: {0:N1} MB" -f ($fontInfo.Length / 1MB))
-
-Write-Step "Reading current manifest from GitHub"
+Write-Step "Reading current manifest"
 $remote = Read-RemoteManifest
 $manifest = $remote.Manifest
 $manifestSha = $remote.Sha
+Assert-ManifestShape $manifest
+
 $currentVersion = [string]$manifest.translation.version
+if ([string]::IsNullOrWhiteSpace($currentVersion)) {
+    throw "Current translation version is empty in manifest.json."
+}
+
+Write-Host "  Current version: $currentVersion"
 
 if ([string]::IsNullOrWhiteSpace($Version)) {
-    Write-Host "Current translation version: $currentVersion"
-    $Version = (Read-Host "Enter new translation version (example: 4.09.29)").Trim()
+    $Version = (Read-Host "Enter new translation version (example: 0.0.1)").Trim()
 }
 
 if (-not (Test-VersionFormat $Version)) {
-    throw "Invalid version $Version. Expected format: X.XX.XX"
+    throw "Invalid version '$Version'. Expected format: X.Y.Z, for example 0.0.1."
 }
 
-if (-not $Force) {
-    $requested = [version]$Version
-    $current = [version]$currentVersion
-    if ($requested -le $current) {
-        throw "Version $Version is not newer than current manifest version $currentVersion."
+try {
+    $requestedVersion = [version]$Version
+    $currentParsedVersion = [version]$currentVersion
+}
+catch {
+    throw "Unable to compare versions '$currentVersion' and '$Version'."
+}
+
+if (-not $Force -and $requestedVersion -le $currentParsedVersion) {
+    throw "Version $Version must be newer than current translation version $currentVersion. Use -Force only when intentionally republishing the same version."
+}
+
+Write-Step "Locating package files"
+$resolvedFiles = @()
+
+foreach ($required in $RequiredFiles) {
+    $source = Resolve-PackageFile -InstallName $required.InstallName -ReleaseName $required.ReleaseName
+    $info = Get-Item -LiteralPath $source
+
+    if ($info.Length -le 0) {
+        throw "File '$($info.Name)' is empty."
+    }
+
+    $resolvedFiles += [pscustomobject]@{
+        InstallName = $required.InstallName
+        ReleaseName = $required.ReleaseName
+        Source = $source
+        Size = $info.Length
+        Sha256 = Get-Sha256Lower $source
     }
 }
 
-Write-Step "Calculating SHA-256"
-$patchSha = Get-Sha256Lower $patchSource
-$fontSha = Get-Sha256Lower $fontSource
-Write-Host "  RU_PATCH_1_P.pak  $patchSha"
-Write-Host "  RU_QFONT.pak      $fontSha"
+foreach ($file in $resolvedFiles) {
+    Write-Host ("  {0,-20} {1,8:N1} MB  {2}" -f $file.ReleaseName, ($file.Size / 1MB), $file.Sha256)
+}
 
 $tag = "translation-$Version"
-$title = "Russian Translation $Version"
+$title = "ICE AND FLAME Translation $Version"
 $releaseBaseUrl = "https://github.com/$Repo/releases/download/$tag"
+
+Write-Step "Checking release tag $tag"
+$previousErrorActionPreference = $ErrorActionPreference
+try {
+    $ErrorActionPreference = "Continue"
+    & gh release view $tag --repo $Repo --json tagName 1>$null 2>$null
+    $releaseExists = ($LASTEXITCODE -eq 0)
+}
+finally {
+    $ErrorActionPreference = $previousErrorActionPreference
+}
+
+if ($releaseExists -and -not $Force) {
+    throw "Release '$tag' already exists. If this is an intentional republish, run RELEASE_TRANSLATION.cmd $Version -Force."
+}
 
 $tempDir = Join-Path ([IO.Path]::GetTempPath()) ("IceAndFlame-Translation-" + [guid]::NewGuid().ToString("N"))
 New-Item -ItemType Directory -Path $tempDir | Out-Null
 
 try {
-    $patchAsset = Join-Path $tempDir "RU_PATCH_1_P.pak"
-    $fontAsset = Join-Path $tempDir "RU_QFONT.pak"
-    Copy-Item -LiteralPath $patchSource -Destination $patchAsset
-    Copy-Item -LiteralPath $fontSource -Destination $fontAsset
+    $assets = @()
+
+    foreach ($file in $resolvedFiles) {
+        $assetPath = Join-Path $tempDir $file.ReleaseName
+        Copy-Item -LiteralPath $file.Source -Destination $assetPath -Force
+        $assets += $assetPath
+    }
 
     Write-Step "Publishing GitHub Release $tag"
-    $previousErrorActionPreference = $ErrorActionPreference
-    try {
-        $ErrorActionPreference = "Continue"
-        & gh release view $tag --repo $Repo --json tagName 1>$null 2>$null
-        $releaseExists = ($LASTEXITCODE -eq 0)
-    }
-    finally {
-        $ErrorActionPreference = $previousErrorActionPreference
-    }
-
     if ($releaseExists) {
-        if (-not $Force) { throw "Release $tag already exists." }
-        Invoke-Gh @("release","upload",$tag,$patchAsset,$fontAsset,"--repo",$Repo,"--clobber")
+        $uploadArgs = @("release", "upload", $tag) + $assets + @("--repo", $Repo, "--clobber")
+        Invoke-Gh $uploadArgs
     }
     else {
-        Invoke-Gh @("release","create",$tag,$patchAsset,$fontAsset,"--repo",$Repo,"--target",$Branch,"--title",$title,"--notes","World of Jade Dynasty Russian translation $Version.")
+        $createArgs = @(
+            "release", "create", $tag
+        ) + $assets + @(
+            "--repo", $Repo,
+            "--target", $Branch,
+            "--title", $title,
+            "--notes", "World of Jade Dynasty Russian translation $Version."
+        )
+        Invoke-Gh $createArgs
     }
 
     Write-Step "Verifying release assets"
     $releaseJson = (& gh release view $tag --repo $Repo --json tagName,assets)
-    if ($LASTEXITCODE -ne 0) { throw "Unable to read back release $tag." }
+    if ($LASTEXITCODE -ne 0) {
+        throw "Unable to read back release '$tag'."
+    }
+
     $releaseData = $releaseJson | ConvertFrom-Json
     $assetNames = @($releaseData.assets | ForEach-Object { $_.name })
-    foreach ($requiredAsset in @("RU_PATCH_1_P.pak","RU_QFONT.pak")) {
-        if ($assetNames -notcontains $requiredAsset) {
-            throw "Release verification failed: $requiredAsset is missing."
+
+    foreach ($file in $resolvedFiles) {
+        if ($assetNames -notcontains $file.ReleaseName) {
+            throw "Release verification failed: '$($file.ReleaseName)' is missing."
         }
     }
 
     Write-Step "Updating manifest.json"
-    foreach ($file in $manifest.translation.files) {
-        if ([string]$file.name -eq "~RU_PATCH_1_P.pak") {
-            $file.url = "$releaseBaseUrl/RU_PATCH_1_P.pak"
-            $file.sha256 = $patchSha
-        }
-        elseif ([string]$file.name -eq "~RU_QFONT.pak") {
-            $file.url = "$releaseBaseUrl/RU_QFONT.pak"
-            $file.sha256 = $fontSha
-        }
+    foreach ($file in $resolvedFiles) {
+        $manifestEntry = $manifest.translation.files | Where-Object { [string]$_.name -eq [string]$file.InstallName }
+        $manifestEntry.url = "$releaseBaseUrl/$($file.ReleaseName)"
+        $manifestEntry.sha256 = $file.Sha256
     }
+
     $manifest.translation.version = $Version
+
     $json = ($manifest | ConvertTo-Json -Depth 20) + [Environment]::NewLine
     $contentBase64 = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($json))
 
     $apiArgs = @(
-        "api","--method","PUT","repos/$Repo/contents/manifest.json",
-        "-f","message=Release translation $Version",
-        "-f","content=$contentBase64",
-        "-f","sha=$manifestSha",
-        "-f","branch=$Branch"
+        "api", "--method", "PUT", "repos/$Repo/contents/manifest.json",
+        "-f", "message=Release translation $Version",
+        "-f", "content=$contentBase64",
+        "-f", "sha=$manifestSha",
+        "-f", "branch=$Branch"
     )
+
     & gh @apiArgs | Out-Null
     if ($LASTEXITCODE -ne 0) {
         throw "Unable to update manifest.json on GitHub."
     }
 
+    # Keep the local checkout in sync with the manifest just published.
+    [IO.File]::WriteAllText($LocalManifestPath, $json, [Text.UTF8Encoding]::new($false))
+
     Write-Step "Checking public manifest.json"
     $verified = $false
+
     for ($attempt = 1; $attempt -le 20; $attempt++) {
         try {
             $cacheBust = [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()
             $publicUrl = "https://raw.githubusercontent.com/$Repo/$Branch/manifest.json?ts=$cacheBust"
             $publicManifest = Invoke-RestMethod -Uri $publicUrl -Headers @{ "Cache-Control" = "no-cache" }
-            $publicPatch = $publicManifest.translation.files | Where-Object { $_.name -eq "~RU_PATCH_1_P.pak" }
-            $publicFont = $publicManifest.translation.files | Where-Object { $_.name -eq "~RU_QFONT.pak" }
-            if ([string]$publicManifest.translation.version -eq $Version -and [string]$publicPatch.sha256 -eq $patchSha -and [string]$publicFont.sha256 -eq $fontSha) {
+
+            if ([string]$publicManifest.translation.version -ne $Version) {
+                throw "Public manifest still reports version $($publicManifest.translation.version)."
+            }
+
+            $allHashesMatch = $true
+            foreach ($file in $resolvedFiles) {
+                $publicEntry = $publicManifest.translation.files | Where-Object { [string]$_.name -eq [string]$file.InstallName }
+                if ($null -eq $publicEntry -or [string]$publicEntry.sha256 -ne [string]$file.Sha256) {
+                    $allHashesMatch = $false
+                    break
+                }
+            }
+
+            if ($allHashesMatch) {
                 $verified = $true
                 break
             }
         }
-        catch { }
+        catch {
+            # GitHub raw content may take a few seconds to become visible.
+        }
+
         Start-Sleep -Seconds 3
     }
 
     if (-not $verified) {
-        throw "Release uploaded, but public manifest did not verify within 60 seconds."
+        throw "Release was uploaded, but the public manifest did not verify within 60 seconds."
     }
 
     Write-Host ""
-    Write-Host "SUCCESS" -ForegroundColor Green
-    Write-Host "Translation version: $Version"
-    Write-Host "Release: https://github.com/$Repo/releases/tag/$tag"
+    Write-Host "==========================================" -ForegroundColor DarkGray
+    Write-Host " SUCCESS" -ForegroundColor Green
+    Write-Host "==========================================" -ForegroundColor DarkGray
+    Write-Host " Translation version: $Version"
+    Write-Host " Release tag:         $tag"
+    Write-Host " Manifest:            updated and verified"
+    Write-Host ""
 }
 finally {
     if (Test-Path -LiteralPath $tempDir) {
