@@ -7,12 +7,12 @@
     "publicKeyId": ""
   },
   "patcher": {
-    "version": "0.0.14",
-    "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-0.0.14/IceAndFlamePatcher.exe",
+    "version": "0.0.15",
+    "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-0.0.15/IceAndFlamePatcher.exe",
     "urls": [],
-    "sha256": "ecc7e7d3a277d5de333e08d2eb60de4886b7cd721e507edc001a63f895f690e0",
+    "sha256": "4526e5bf057296fbb917cdf2ab06d8af8d7e033ee0fb69c4d1cf6b8bae6c6ad5",
     "mandatory": false,
-    "releaseNotes": "0.0.14\r\n\r\n• Внедрено новое состояние «Файлы актуальны» по утверждённому макету.\r\n• Обновлена шапка: логотип, название «Автопатчер» и динамическая версия русификатора.\r\n• Добавлена крупная зелёная индикация успешного состояния, обновлены прогресс-бар и кнопки «Запустить игру» / «Проверить файлы».\r\n• Журнал приведён к новому визуальному стилю и сохранена существующая логика патчера.\r\n• Проверки сборки, headless smoke test, WebView2 smoke test и canary self-update выполняются перед публикацией.",
+    "releaseNotes": "0.0.15\r\n\r\n• Главный экран «Файлы актуальны» переведён на pixel-perfect компоновку 800×500 по утверждённому макету.\r\n• Подключены предоставленные SVG-ассеты: logo, check, play, refresh, settings, journal и chevron.\r\n• Зафиксированы размеры, координаты, типографика, цвета, градиенты, скругления и отступы основного состояния.\r\n• Журнал отображает три последние записи и визуально соответствует макету.\r\n• Логика патчера, WebView2 bridge, обновления и остальные окна сохранены.",
     "rolloutPercent": 100,
     "blockedVersions": []
   },
