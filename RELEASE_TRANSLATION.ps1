@@ -9,6 +9,10 @@ param(
 
     [string]$MinPatcherVersion = "0.0.0",
 
+    [string]$PatchMirrorUrl = "",
+
+    [string]$FontMirrorUrl = "",
+
     [switch]$Force
 )
 
@@ -252,7 +256,14 @@ try {
 
         Ensure-Property $entry "urls" @()
         $entry.url = "$releaseBaseUrl/$($file.ReleaseName)"
-        $entry.urls = @()
+
+        $mirror = if ($file.InstallName -eq "~RU_PATCH_1_P.pak") {
+            $PatchMirrorUrl
+        } else {
+            $FontMirrorUrl
+        }
+
+        $entry.urls = if ([string]::IsNullOrWhiteSpace($mirror)) { @() } else { @($mirror.Trim()) }
         $entry.sha256 = $file.Sha256
     }
 
