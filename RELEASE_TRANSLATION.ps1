@@ -290,8 +290,7 @@ try {
     $json = ($manifest | ConvertTo-Json -Depth 40) + [Environment]::NewLine
     [IO.File]::WriteAllText($manifestPath, $json, [Text.UTF8Encoding]::new($false))
 
-    Put-RemoteFile -Path $ManifestName -Message "Release $Channel translation $Version" -Bytes ([IO.File]::ReadAllBytes($manifestPath)) -ExistingSha $manifestSha
-
+    $signaturePath = ""
     if ($signManifest) {
         Write-Step "Signing $ManifestName"
         Require-Command "dotnet"
@@ -302,7 +301,11 @@ try {
 
         & dotnet run --project (Join-Path $PSScriptRoot "tools\ManifestSigner\ManifestSigner.csproj") --configuration Release -- sign $privateKey $manifestPath $signaturePath
         if ($LASTEXITCODE -ne 0 -or -not (Test-Path $signaturePath)) { throw "Manifest signing failed." }
+    }
 
+    Put-RemoteFile -Path $ManifestName -Message "Release $Channel translation $Version" -Bytes ([IO.File]::ReadAllBytes($manifestPath)) -ExistingSha $manifestSha
+
+    if ($signManifest) {
         $signatureName = "$ManifestName.sig"
         $signatureSha = Get-RemoteFileShaOptional $signatureName
         Put-RemoteFile -Path $signatureName -Message "Sign $Channel translation manifest $Version" -Bytes ([IO.File]::ReadAllBytes($signaturePath)) -ExistingSha $signatureSha
