@@ -1,18 +1,15 @@
 param(
     [Parameter(Position = 0)]
     [string]$Version,
-
-    [ValidateSet("stable", "beta")]
+    [ValidateSet("stable", "beta", "dev")]
     [string]$Channel = "stable",
-
     [string]$ReleaseNotes = "",
-
     [string]$MinPatcherVersion = "0.0.0",
-
+    [string]$MinGameBuild = "",
+    [string]$MaxGameBuild = "",
+    [switch]$BlockUnknownGameBuild,
     [string]$PatchMirrorUrl = "",
-
     [string]$FontMirrorUrl = "",
-
     [switch]$Force
 )
 
@@ -22,8 +19,18 @@ $ErrorActionPreference = "Stop"
 $Repo = "Skileton95/IceAndFlame-Updates"
 $Branch = "main"
 $PackageDir = Join-Path $PSScriptRoot "package"
-$ManifestName = if ($Channel -eq "beta") { "manifest-beta.json" } else { "manifest.json" }
-$TagPrefix = if ($Channel -eq "beta") { "translation-beta-" } else { "translation-" }
+
+$ManifestName = switch ($Channel) {
+    "beta" { "manifest-beta.json" }
+    "dev" { "manifest-dev.json" }
+    default { "manifest.json" }
+}
+
+$TagPrefix = switch ($Channel) {
+    "beta" { "translation-beta-" }
+    "dev" { "translation-dev-" }
+    default { "translation-" }
+}
 
 $RequiredFiles = @(
     @{ InstallName = "~RU_PATCH_1_P.pak"; ReleaseName = "RU_PATCH_1_P.pak" },
@@ -53,14 +60,12 @@ function Invoke-Gh {
 
 function Resolve-PackageFile {
     param([string]$InstallName, [string]$ReleaseName)
-
     foreach ($name in @($InstallName, $ReleaseName)) {
         $candidate = Join-Path $PackageDir $name
         if (Test-Path -LiteralPath $candidate -PathType Leaf) {
             return (Resolve-Path -LiteralPath $candidate).Path
         }
     }
-
     throw "Missing translation file. Put '$InstallName' or '$ReleaseName' into '$PackageDir'."
 }
 
@@ -76,19 +81,38 @@ function Test-VersionFormat {
 
 function Read-RemoteManifest {
     $responseJson = (& gh api "repos/$Repo/contents/${ManifestName}?ref=$Branch")
-    if ($LASTEXITCODE -ne 0) {
-        throw "Unable to read $ManifestName from GitHub."
-    }
-
+    if ($LASTEXITCODE -ne 0) { throw "Unable to read $ManifestName from GitHub." }
     $response = $responseJson | ConvertFrom-Json
     $base64 = ([string]$response.content) -replace "\s", ""
     $bytes = [Convert]::FromBase64String($base64)
-    $text = [Text.Encoding]::UTF8.GetString($bytes)
-
     return @{
         Sha = [string]$response.sha
-        Manifest = ($text | ConvertFrom-Json)
+        Manifest = (([Text.Encoding]::UTF8.GetString($bytes)) | ConvertFrom-Json)
     }
+}
+
+function Get-RemoteFileShaOptional {
+    param([string]$Path)
+    $old = $ErrorActionPreference
+    try {
+        $ErrorActionPreference = "Continue"
+        $json = (& gh api "repos/$Repo/contents/${Path}?ref=$Branch" 2>$null)
+        if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace([string]$json)) { return "" }
+        return [string](($json | ConvertFrom-Json).sha)
+    }
+    finally { $ErrorActionPreference = $old }
+}
+
+function Put-RemoteFile {
+    param([string]$Path, [string]$Message, [byte[]]$Bytes, [string]$ExistingSha = "")
+    $payload = @{
+        message = $Message
+        content = [Convert]::ToBase64String($Bytes)
+        branch = $Branch
+    }
+    if (-not [string]::IsNullOrWhiteSpace($ExistingSha)) { $payload.sha = $ExistingSha }
+    ($payload | ConvertTo-Json) | gh api --method PUT "repos/$Repo/contents/$Path" --input - | Out-Null
+    if ($LASTEXITCODE -ne 0) { throw "Unable to update '$Path' on GitHub." }
 }
 
 function Ensure-Property {
@@ -105,12 +129,9 @@ Write-Host " Channel: $Channel" -ForegroundColor Yellow
 Write-Host "==========================================" -ForegroundColor DarkGray
 
 Require-Command "gh"
-
 Write-Step "Checking GitHub authentication"
 & gh auth status --hostname github.com
-if ($LASTEXITCODE -ne 0) {
-    throw "GitHub CLI is not authenticated. Run: gh auth login"
-}
+if ($LASTEXITCODE -ne 0) { throw "GitHub CLI is not authenticated. Run: gh auth login" }
 
 if (-not (Test-Path -LiteralPath $PackageDir)) {
     New-Item -ItemType Directory -Path $PackageDir | Out-Null
@@ -132,17 +153,11 @@ if ([string]::IsNullOrWhiteSpace($Version)) {
     $Version = (Read-Host "Enter new translation version (example: 0.0.2)").Trim()
 }
 
-if (-not (Test-VersionFormat $Version)) {
-    throw "Invalid version '$Version'. Expected format: X.Y.Z."
-}
-if (-not (Test-VersionFormat $MinPatcherVersion)) {
-    throw "Invalid MinPatcherVersion '$MinPatcherVersion'. Expected format: X.Y.Z."
-}
+if (-not (Test-VersionFormat $Version)) { throw "Invalid version '$Version'. Expected format: X.Y.Z." }
+if (-not (Test-VersionFormat $MinPatcherVersion)) { throw "Invalid MinPatcherVersion '$MinPatcherVersion'. Expected format: X.Y.Z." }
 
-if (-not $Force) {
-    if ([version]$Version -le [version]$currentVersion) {
-        throw "Version $Version must be newer than current $currentVersion. Use -Force only for an intentional republish."
-    }
+if (-not $Force -and [version]$Version -le [version]$currentVersion) {
+    throw "Version $Version must be newer than current $currentVersion. Use -Force only for an intentional republish."
 }
 
 if ([string]::IsNullOrWhiteSpace($ReleaseNotes)) {
@@ -176,23 +191,21 @@ foreach ($file in $resolvedFiles) {
 }
 
 $tag = "$TagPrefix$Version"
-$title = if ($Channel -eq "beta") {
-    "ICE AND FLAME Translation $Version BETA"
-} else {
-    "ICE AND FLAME Translation $Version"
+$title = switch ($Channel) {
+    "beta" { "ICE AND FLAME Translation $Version BETA" }
+    "dev" { "ICE AND FLAME Translation $Version DEV" }
+    default { "ICE AND FLAME Translation $Version" }
 }
 $releaseBaseUrl = "https://github.com/$Repo/releases/download/$tag"
 
 Write-Step "Checking release tag $tag"
-$previousErrorActionPreference = $ErrorActionPreference
+$oldPreference = $ErrorActionPreference
 try {
     $ErrorActionPreference = "Continue"
     & gh release view $tag --repo $Repo --json tagName 1>$null 2>$null
     $releaseExists = ($LASTEXITCODE -eq 0)
 }
-finally {
-    $ErrorActionPreference = $previousErrorActionPreference
-}
+finally { $ErrorActionPreference = $oldPreference }
 
 if ($releaseExists -and -not $Force) {
     throw "Release '$tag' already exists. Use -Force only when intentionally republishing it."
@@ -214,14 +227,14 @@ try {
         Invoke-Gh (@("release", "upload", $tag) + $assets + @("--repo", $Repo, "--clobber"))
     }
     else {
-        Invoke-Gh (@(
-            "release", "create", $tag
-        ) + $assets + @(
+        $releaseArgs = @("release", "create", $tag) + $assets + @(
             "--repo", $Repo,
             "--target", $Branch,
             "--title", $title,
             "--notes", $ReleaseNotes
-        ))
+        )
+        if ($Channel -ne "stable") { $releaseArgs += "--prerelease" }
+        Invoke-Gh $releaseArgs
     }
 
     Write-Step "Verifying release assets"
@@ -229,7 +242,6 @@ try {
     if ($LASTEXITCODE -ne 0) { throw "Unable to read back release '$tag'." }
     $releaseData = $releaseJson | ConvertFrom-Json
     $assetNames = @($releaseData.assets | ForEach-Object { $_.name })
-
     foreach ($file in $resolvedFiles) {
         if ($assetNames -notcontains $file.ReleaseName) {
             throw "Release verification failed: '$($file.ReleaseName)' is missing."
@@ -237,50 +249,63 @@ try {
     }
 
     Write-Step "Updating $ManifestName"
-    Ensure-Property $manifest "schemaVersion" 2
+    Ensure-Property $manifest "schemaVersion" 3
     Ensure-Property $manifest "channel" $Channel
-    $manifest.schemaVersion = 2
-    $manifest.channel = $Channel
-
+    Ensure-Property $manifest "security" ([pscustomobject]@{ signatureRequired=$false; signatureUrl=""; publicKeyId="" })
+    Ensure-Property $manifest "support" ([pscustomobject]@{ diagnosticsUploadUrl=""; statusUrl="" })
     Ensure-Property $manifest.translation "minPatcherVersion" "0.0.0"
     Ensure-Property $manifest.translation "releaseNotes" ""
+    Ensure-Property $manifest.translation "game" ([pscustomobject]@{ minBuild=""; maxBuild=""; blockUnknownBuild=$false })
+
+    $manifest.schemaVersion = 3
+    $manifest.channel = $Channel
     $manifest.translation.version = $Version
     $manifest.translation.minPatcherVersion = $MinPatcherVersion
     $manifest.translation.releaseNotes = $ReleaseNotes
+    $manifest.translation.game.minBuild = $MinGameBuild
+    $manifest.translation.game.maxBuild = $MaxGameBuild
+    $manifest.translation.game.blockUnknownBuild = [bool]$BlockUnknownGameBuild
 
     foreach ($file in $resolvedFiles) {
         $entry = $manifest.translation.files | Where-Object { [string]$_.name -eq [string]$file.InstallName }
-        if ($null -eq $entry) {
-            throw "$ManifestName is missing file entry '$($file.InstallName)'."
-        }
+        if ($null -eq $entry) { throw "$ManifestName is missing file entry '$($file.InstallName)'." }
 
         Ensure-Property $entry "urls" @()
         $entry.url = "$releaseBaseUrl/$($file.ReleaseName)"
 
-        $mirror = if ($file.InstallName -eq "~RU_PATCH_1_P.pak") {
-            $PatchMirrorUrl
-        } else {
-            $FontMirrorUrl
-        }
-
+        $mirror = if ($file.InstallName -eq "~RU_PATCH_1_P.pak") { $PatchMirrorUrl } else { $FontMirrorUrl }
         $entry.urls = if ([string]::IsNullOrWhiteSpace($mirror)) { @() } else { @($mirror.Trim()) }
         $entry.sha256 = $file.Sha256
     }
 
-    $json = ($manifest | ConvertTo-Json -Depth 30) + [Environment]::NewLine
-    $contentBase64 = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($json))
+    $signManifest =
+        -not [string]::IsNullOrWhiteSpace($env:MANIFEST_SIGNING_PRIVATE_KEY_PEM) -and
+        -not [string]::IsNullOrWhiteSpace($env:MANIFEST_SIGNING_PUBLIC_KEY_PEM)
 
-    $apiArgs = @(
-        "api", "--method", "PUT", "repos/$Repo/contents/$ManifestName",
-        "-f", "message=Release $Channel translation $Version",
-        "-f", "content=$contentBase64",
-        "-f", "sha=$manifestSha",
-        "-f", "branch=$Branch"
-    )
+    $manifest.security.signatureRequired = $signManifest
+    $manifest.security.signatureUrl = if ($signManifest) { "https://raw.githubusercontent.com/$Repo/$Branch/$ManifestName.sig" } else { "" }
+    $manifest.security.publicKeyId = if ($signManifest) { "ice-and-flame-rsa-1" } else { "" }
 
-    & gh @apiArgs | Out-Null
-    if ($LASTEXITCODE -ne 0) {
-        throw "Unable to update $ManifestName on GitHub."
+    $manifestPath = Join-Path $tempDir $ManifestName
+    $json = ($manifest | ConvertTo-Json -Depth 40) + [Environment]::NewLine
+    [IO.File]::WriteAllText($manifestPath, $json, [Text.UTF8Encoding]::new($false))
+
+    Put-RemoteFile -Path $ManifestName -Message "Release $Channel translation $Version" -Bytes ([IO.File]::ReadAllBytes($manifestPath)) -ExistingSha $manifestSha
+
+    if ($signManifest) {
+        Write-Step "Signing $ManifestName"
+        Require-Command "dotnet"
+
+        $privateKey = Join-Path $tempDir "manifest-private.pem"
+        $signaturePath = Join-Path $tempDir "$ManifestName.sig"
+        [IO.File]::WriteAllText($privateKey, $env:MANIFEST_SIGNING_PRIVATE_KEY_PEM, [Text.UTF8Encoding]::new($false))
+
+        & dotnet run --project (Join-Path $PSScriptRoot "tools\ManifestSigner\ManifestSigner.csproj") --configuration Release -- sign $privateKey $manifestPath $signaturePath
+        if ($LASTEXITCODE -ne 0 -or -not (Test-Path $signaturePath)) { throw "Manifest signing failed." }
+
+        $signatureName = "$ManifestName.sig"
+        $signatureSha = Get-RemoteFileShaOptional $signatureName
+        Put-RemoteFile -Path $signatureName -Message "Sign $Channel translation manifest $Version" -Bytes ([IO.File]::ReadAllBytes($signaturePath)) -ExistingSha $signatureSha
     }
 
     Write-Step "Checking public $ManifestName"
@@ -326,7 +351,9 @@ try {
     Write-Host " Translation version: $Version"
     Write-Host " Release tag:         $tag"
     Write-Host " Minimum patcher:     $MinPatcherVersion"
+    Write-Host " Game range:          $MinGameBuild .. $MaxGameBuild"
     Write-Host " Manifest:            $ManifestName"
+    Write-Host " Manifest signed:     $signManifest"
     Write-Host ""
 }
 finally {
