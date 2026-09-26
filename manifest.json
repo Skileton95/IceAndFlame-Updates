@@ -7,12 +7,12 @@
     "publicKeyId": ""
   },
   "patcher": {
-    "version": "0.0.13",
-    "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-0.0.13/IceAndFlamePatcher.exe",
+    "version": "0.0.14",
+    "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-0.0.14/IceAndFlamePatcher.exe",
     "urls": [],
-    "sha256": "4849a037f94efcc26553f358adc793d44c881be122b471075f5d76fdcfaf6e26",
+    "sha256": "ecc7e7d3a277d5de333e08d2eb60de4886b7cd721e507edc001a63f895f690e0",
     "mandatory": false,
-    "releaseNotes": "0.0.13\r\n\r\n• Тестовый релиз для проверки автообновления 0.0.12 → 0.0.13 после внедрения нового компактного интерфейса.\r\n• Визуальная структура 0.0.12 сохранена без изменений.\r\n• Механизм native self-update, проверка SHA-256, health marker и автоматический rollback сохранены.\r\n• Релиз используется для проверки полного сценария обновления через сам патчер.",
+    "releaseNotes": "0.0.14\r\n\r\n• Внедрено новое состояние «Файлы актуальны» по утверждённому макету.\r\n• Обновлена шапка: логотип, название «Автопатчер» и динамическая версия русификатора.\r\n• Добавлена крупная зелёная индикация успешного состояния, обновлены прогресс-бар и кнопки «Запустить игру» / «Проверить файлы».\r\n• Журнал приведён к новому визуальному стилю и сохранена существующая логика патчера.\r\n• Проверки сборки, headless smoke test, WebView2 smoke test и canary self-update выполняются перед публикацией.",
     "rolloutPercent": 100,
     "blockedVersions": []
   },
