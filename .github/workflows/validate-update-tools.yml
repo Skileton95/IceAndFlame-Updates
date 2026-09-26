@@ -1,0 +1,42 @@
+name: Validate update tooling
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "RELEASE_TRANSLATION.ps1"
+      - "RELEASE_TRANSLATION.cmd"
+      - "manifest.json"
+      - "manifest-beta.json"
+      - ".github/workflows/validate-update-tools.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Parse PowerShell publisher
+        shell: pwsh
+        run: |
+          $text = Get-Content "RELEASE_TRANSLATION.ps1" -Raw
+          [void][scriptblock]::Create($text)
+          Write-Host "RELEASE_TRANSLATION.ps1 syntax OK"
+
+      - name: Validate manifests
+        shell: pwsh
+        run: |
+          foreach ($path in @("manifest.json", "manifest-beta.json")) {
+            $manifest = Get-Content $path -Raw | ConvertFrom-Json
+            if ($manifest.schemaVersion -lt 2) { throw "$path: schemaVersion must be >= 2" }
+            if ($null -eq $manifest.patcher -or $null -eq $manifest.translation) { throw "$path: missing sections" }
+            if (@($manifest.translation.files).Count -lt 1) { throw "$path: translation.files is empty" }
+            foreach ($file in $manifest.translation.files) {
+              if ([string]::IsNullOrWhiteSpace([string]$file.name)) { throw "$path: file name is empty" }
+            }
+            Write-Host "$path OK"
+          }
