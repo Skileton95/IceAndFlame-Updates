@@ -75,7 +75,7 @@ function Test-VersionFormat {
 }
 
 function Read-RemoteManifest {
-    $responseJson = (& gh api "repos/$Repo/contents/$ManifestName?ref=$Branch")
+    $responseJson = (& gh api "repos/$Repo/contents/${ManifestName}?ref=$Branch")
     if ($LASTEXITCODE -ne 0) {
         throw "Unable to read $ManifestName from GitHub."
     }
