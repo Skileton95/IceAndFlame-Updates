@@ -8,6 +8,8 @@ on:
       - "RELEASE_TRANSLATION.cmd"
       - "manifest.json"
       - "manifest-beta.json"
+      - "manifest-dev.json"
+      - "tools/ManifestSigner/**"
       - ".github/workflows/validate-update-tools.yml"
   workflow_dispatch:
 
@@ -20,6 +22,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
       - name: Parse PowerShell publisher
         shell: pwsh
         run: |
@@ -27,16 +33,34 @@ jobs:
           [void][scriptblock]::Create($text)
           Write-Host "RELEASE_TRANSLATION.ps1 syntax OK"
 
+      - name: Build manifest signer
+        shell: pwsh
+        run: |
+          dotnet build "tools/ManifestSigner/ManifestSigner.csproj" -c Release --nologo
+
       - name: Validate manifests
         shell: pwsh
         run: |
-          foreach ($path in @("manifest.json", "manifest-beta.json")) {
+          foreach ($path in @("manifest.json", "manifest-beta.json", "manifest-dev.json")) {
             $manifest = Get-Content $path -Raw | ConvertFrom-Json
-            if ($manifest.schemaVersion -lt 2) { throw "${path}: schemaVersion must be >= 2" }
-            if ($null -eq $manifest.patcher -or $null -eq $manifest.translation) { throw "${path}: missing sections" }
+
+            if ($manifest.schemaVersion -lt 3) { throw "${path}: schemaVersion must be >= 3" }
+            if ([string]::IsNullOrWhiteSpace([string]$manifest.channel)) { throw "${path}: channel is missing" }
+            if ($null -eq $manifest.security) { throw "${path}: security section is missing" }
+            if ($null -eq $manifest.support) { throw "${path}: support section is missing" }
+            if ($null -eq $manifest.patcher -or $null -eq $manifest.translation) { throw "${path}: missing patcher/translation sections" }
+            if ($null -eq $manifest.patcher.rolloutPercent) { throw "${path}: rolloutPercent is missing" }
+            if ([int]$manifest.patcher.rolloutPercent -lt 0 -or [int]$manifest.patcher.rolloutPercent -gt 100) {
+              throw "${path}: rolloutPercent must be 0..100"
+            }
+            if ($null -eq $manifest.patcher.blockedVersions) { throw "${path}: blockedVersions is missing" }
+            if ($null -eq $manifest.translation.game) { throw "${path}: game compatibility section is missing" }
             if (@($manifest.translation.files).Count -lt 1) { throw "${path}: translation.files is empty" }
+
             foreach ($file in $manifest.translation.files) {
               if ([string]::IsNullOrWhiteSpace([string]$file.name)) { throw "${path}: file name is empty" }
+              if ([string]::IsNullOrWhiteSpace([string]$file.sha256)) { throw "${path}: sha256 is empty for $($file.name)" }
             }
+
             Write-Host "$path OK"
           }
