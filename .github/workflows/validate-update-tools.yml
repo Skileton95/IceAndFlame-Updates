@@ -32,11 +32,11 @@ jobs:
         run: |
           foreach ($path in @("manifest.json", "manifest-beta.json")) {
             $manifest = Get-Content $path -Raw | ConvertFrom-Json
-            if ($manifest.schemaVersion -lt 2) { throw "$path: schemaVersion must be >= 2" }
-            if ($null -eq $manifest.patcher -or $null -eq $manifest.translation) { throw "$path: missing sections" }
-            if (@($manifest.translation.files).Count -lt 1) { throw "$path: translation.files is empty" }
+            if ($manifest.schemaVersion -lt 2) { throw "${path}: schemaVersion must be >= 2" }
+            if ($null -eq $manifest.patcher -or $null -eq $manifest.translation) { throw "${path}: missing sections" }
+            if (@($manifest.translation.files).Count -lt 1) { throw "${path}: translation.files is empty" }
             foreach ($file in $manifest.translation.files) {
-              if ([string]::IsNullOrWhiteSpace([string]$file.name)) { throw "$path: file name is empty" }
+              if ([string]::IsNullOrWhiteSpace([string]$file.name)) { throw "${path}: file name is empty" }
             }
             Write-Host "$path OK"
           }
