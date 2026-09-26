@@ -7,12 +7,12 @@
     "publicKeyId": ""
   },
   "patcher": {
-    "version": "0.0.17",
-    "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-0.0.17/IceAndFlamePatcher.exe",
+    "version": "0.0.18",
+    "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-0.0.18/IceAndFlamePatcher.exe",
     "urls": [],
-    "sha256": "ce9f2fca6059f548fce3d8aead5e486c16f81b03352d7da953c2fa4fae95be4c",
+    "sha256": "88f2ee8d00d5e0e8449da1998cc134f53a401cfa07733daaa3d47c2e974fc108",
     "mandatory": false,
-    "releaseNotes": "0.0.17\r\n\r\n• Исправлено перемещение окна: drag теперь работает через нативный Win32 caption-drag из WebView2.\r\n• Иконки Play, Refresh, Settings, Journal и Chevron переведены в светлую палитру.\r\n• Основная и вторичная кнопки получили более объёмные градиенты, внутренний блик и глубину.\r\n• Внешние углы окна увеличены до 18 px; добавлено реальное скругление HWND, которое также клипует WebView2.\r\n• Журнал и кнопки получили более мягкое скругление.\r\n• Прогресс-бар переработан: значение жёстко ограничивается 0–100%, заполнение теперь работает через scaleX без переполнения и артефактов на 100%.",
+    "releaseNotes": "0.0.18\r\n\r\n• Уменьшено расстояние между кнопками свернуть / развернуть / закрыть в правом верхнем углу.\r\n• Исправлен журнал: клик по заголовку или стрелке теперь сворачивает и разворачивает блок; Enter/Space тоже работают.\r\n• У кнопки настроек убраны рамка и обводка, фон сделан прозрачным.\r\n• Яркость иконки настроек снижена; при наведении она становится лишь немного ярче.\r\n• Сохранены исправления 0.0.17 для drag окна, скруглённых краёв, объёмных кнопок и стабильного progress bar.",
     "rolloutPercent": 100,
     "blockedVersions": []
   },
