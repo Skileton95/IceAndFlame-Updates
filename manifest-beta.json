@@ -1,18 +1,30 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "channel": "beta",
+  "security": {
+    "signatureRequired": false,
+    "signatureUrl": "",
+    "publicKeyId": ""
+  },
   "patcher": {
     "version": "0.0.5",
     "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-0.0.5/IceAndFlamePatcher.exe",
     "urls": [],
     "sha256": "6d49beaf993f437c2ce0a7b42993258c6ae37eac9a19d4307a1d9277d62d2236",
     "mandatory": false,
-    "releaseNotes": "Бета-канал пока синхронизирован со стабильным."
+    "releaseNotes": "Бета-канал пока синхронизирован со стабильным.",
+    "rolloutPercent": 100,
+    "blockedVersions": []
   },
   "translation": {
     "version": "0.0.1",
     "minPatcherVersion": "0.0.4",
     "releaseNotes": "Бета-канал пока синхронизирован со стабильным русификатором.",
+    "game": {
+      "minBuild": "",
+      "maxBuild": "",
+      "blockUnknownBuild": false
+    },
     "files": [
       {
         "name": "~RU_PATCH_1_P.pak",
@@ -27,5 +39,9 @@
         "sha256": "6b564af9e47a3b7a4f43fb8ee449ac0c8a7b2c485e5828494dc2deb51d1119ef"
       }
     ]
+  },
+  "support": {
+    "diagnosticsUploadUrl": "",
+    "statusUrl": ""
   }
 }
