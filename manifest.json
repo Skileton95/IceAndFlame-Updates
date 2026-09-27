@@ -21,7 +21,7 @@
                                         ]
                 },
     "translation":  {
-                        "version":  "0.0.4",
+                        "version":  "0.0.6",
                         "minPatcherVersion":  "0.0.4",
                         "releaseNotes":  "Первый релиз русификатора в новой системе обновлений.",
                         "game":  {
@@ -32,15 +32,15 @@
                         "files":  [
                                       {
                                           "name":  "~RU_PATCH_1_P.pak",
-                                          "url":  "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/translation-0.0.4/RU_PATCH_1_P.pak",
+                                          "url":  "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/translation-0.0.6/RU_PATCH_1_P.pak",
                                           "urls":  [
 
                                                    ],
-                                          "sha256":  "73cf03a7b2b9ed15670c45a2c30135c4e12b33e14e682f2b048a1ed85c610c7d"
+                                          "sha256":  "6e8d0c5f953d46238178617b4bfa90b43b0e78ebaee89d182c2200115c9cd188"
                                       },
                                       {
                                           "name":  "~RU_QFONT.pak",
-                                          "url":  "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/translation-0.0.4/RU_QFONT.pak",
+                                          "url":  "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/translation-0.0.6/RU_QFONT.pak",
                                           "urls":  [
 
                                                    ],
