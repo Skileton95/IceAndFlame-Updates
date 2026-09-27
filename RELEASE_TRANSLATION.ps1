@@ -311,21 +311,55 @@ try {
         Put-RemoteFile -Path $signatureName -Message "Sign $Channel translation manifest $Version" -Bytes ([IO.File]::ReadAllBytes($signaturePath)) -ExistingSha $signatureSha
     }
 
-    Write-Step "Checking public $ManifestName"
-    $verified = $false
-    for ($attempt = 1; $attempt -le 20; $attempt++) {
+    Write-Step "Verifying committed $ManifestName"
+
+    # Verify the authoritative GitHub Contents API first. raw.githubusercontent.com
+    # is CDN-backed and can lag behind a successful commit for a minute or more.
+    # CDN propagation delay must not turn a successful release into a failure.
+    $remoteCheck = Read-RemoteManifest
+    $committedManifest = $remoteCheck.Manifest
+
+    if ([string]$committedManifest.translation.version -ne $Version) {
+        throw "Committed manifest reports version $($committedManifest.translation.version), expected $Version."
+    }
+
+    foreach ($file in $resolvedFiles) {
+        $committedEntry = $committedManifest.translation.files |
+            Where-Object { [string]$_.name -eq [string]$file.InstallName }
+
+        if ($null -eq $committedEntry) {
+            throw "Committed manifest is missing '$($file.InstallName)'."
+        }
+
+        if ([string]$committedEntry.sha256 -ne [string]$file.Sha256) {
+            throw "Committed manifest hash mismatch for '$($file.InstallName)'."
+        }
+    }
+
+    Write-Host " Authoritative manifest verified." -ForegroundColor Green
+
+    Write-Step "Checking public CDN propagation"
+    $publicVerified = $false
+    $lastPublicError = ""
+
+    for ($attempt = 1; $attempt -le 10; $attempt++) {
         try {
             $cacheBust = [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()
             $publicUrl = "https://raw.githubusercontent.com/$Repo/$Branch/${ManifestName}?ts=$cacheBust"
-            $publicManifest = Invoke-RestMethod -Uri $publicUrl -Headers @{ "Cache-Control" = "no-cache" }
+            $publicManifest = Invoke-RestMethod -Uri $publicUrl -Headers @{
+                "Cache-Control" = "no-cache, no-store, max-age=0"
+                "Pragma" = "no-cache"
+            }
 
             if ([string]$publicManifest.translation.version -ne $Version) {
-                throw "Public manifest still reports version $($publicManifest.translation.version)."
+                throw "CDN still reports version $($publicManifest.translation.version)."
             }
 
             $allHashesMatch = $true
             foreach ($file in $resolvedFiles) {
-                $publicEntry = $publicManifest.translation.files | Where-Object { [string]$_.name -eq [string]$file.InstallName }
+                $publicEntry = $publicManifest.translation.files |
+                    Where-Object { [string]$_.name -eq [string]$file.InstallName }
+
                 if ($null -eq $publicEntry -or [string]$publicEntry.sha256 -ne [string]$file.Sha256) {
                     $allHashesMatch = $false
                     break
@@ -333,19 +367,28 @@ try {
             }
 
             if ($allHashesMatch) {
-                $verified = $true
+                $publicVerified = $true
                 break
             }
+
+            $lastPublicError = "CDN manifest hashes have not propagated yet."
         }
-        catch { }
+        catch {
+            $lastPublicError = $_.Exception.Message
+        }
 
-        Start-Sleep -Seconds 3
+        Start-Sleep -Seconds 2
     }
 
-    if (-not $verified) {
-        throw "Release was uploaded, but the public manifest did not verify within 60 seconds."
+    if ($publicVerified) {
+        Write-Host " Public CDN manifest verified." -ForegroundColor Green
     }
-
+    else {
+        Write-Warning "Release is committed and valid, but raw.githubusercontent.com has not propagated yet. This is not a release failure."
+        if (-not [string]::IsNullOrWhiteSpace($lastPublicError)) {
+            Write-Host " CDN status: $lastPublicError" -ForegroundColor DarkYellow
+        }
+    }
     Write-Host ""
     Write-Host "==========================================" -ForegroundColor DarkGray
     Write-Host " SUCCESS" -ForegroundColor Green
