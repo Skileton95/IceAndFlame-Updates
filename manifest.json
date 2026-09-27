@@ -21,7 +21,7 @@
                                         ]
                 },
     "translation":  {
-                        "version":  "0.0.3",
+                        "version":  "0.0.4",
                         "minPatcherVersion":  "0.0.4",
                         "releaseNotes":  "Первый релиз русификатора в новой системе обновлений.",
                         "game":  {
@@ -32,7 +32,7 @@
                         "files":  [
                                       {
                                           "name":  "~RU_PATCH_1_P.pak",
-                                          "url":  "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/translation-0.0.3/RU_PATCH_1_P.pak",
+                                          "url":  "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/translation-0.0.4/RU_PATCH_1_P.pak",
                                           "urls":  [
 
                                                    ],
@@ -40,7 +40,7 @@
                                       },
                                       {
                                           "name":  "~RU_QFONT.pak",
-                                          "url":  "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/translation-0.0.3/RU_QFONT.pak",
+                                          "url":  "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/translation-0.0.4/RU_QFONT.pak",
                                           "urls":  [
 
                                                    ],
