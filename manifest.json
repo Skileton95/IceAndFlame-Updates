@@ -7,12 +7,12 @@
     "publicKeyId": ""
   },
   "patcher": {
-    "version": "0.0.60",
-    "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-0.0.60/IceAndFlamePatcher.exe",
+    "version": "0.0.61",
+    "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-0.0.61/IceAndFlamePatcher.exe",
     "urls": [],
-    "sha256": "80bea77bf0646dc29e6f2e83d6e4aa03ef067d7ce50e71fb2555cc9322effdbf",
+    "sha256": "76625f0158fba8b3a08865b6d2c0fbd2854d8a36a7812016551bd08d8e00daa2",
     "mandatory": false,
-    "releaseNotes": "0.0.60\r\n\r\n• Финальный visual polish без изменения Grid, размеров окна, content margins, размеров кнопок, Journal, Status icon или бизнес-логики.\r\n• Удалён legacy glossy pseudo-layer action buttons, из-за которого Primary сохраняла пластиковый highlight несмотря на поздние стили.\r\n• Primary оставлена синей, но переведена на мягкий flat vertical gradient без bevel/glow/shadow.\r\n• Secondary полностью очищена от metallic gradient и использует Splash track color #10283E с border на базе #3C789F.\r\n• Progress MainWindow приведён к токенам SplashWindow: track #10283E, border #3C789F, gradient #17E1B0 → #1AD8BE → #20CEE0 → #2AB8F6.\r\n• Старый высокий glossy highlight progress заменён на тонкую 2px подсветку.\r\n• Success title переведён с яркого green на splash cyan/teal #20CEE0; ring/check остаются немного зеленее.\r\n• Progress визуально поднят на 8 px; button row — на 5 px. Grid и размеры секций не изменены.\r\n• Window controls используют splash foreground #BFD4E7, hover #17364F, pressed #204968; click-area 30×30 px.\r\n• Settings icon стала контрастнее, без постоянной рамки.",
+    "releaseNotes": "0.0.61\r\n\r\n• Исправлена только внутренняя горизонтальная асимметрия MainWindow; общий дизайн, размер окна, вертикальная геометрия и бизнес-логика не менялись.\r\n• MainContent закреплён как единый горизонтальный контейнер: 32 px слева и 32 px справа, рабочая ширина 536 px.\r\n• Status, Progress и Journal теперь растягиваются по одной и той же grid-column и используют абсолютно одинаковые content bounds.\r\n• Progress row оформлен как единый Grid: * | 12 px | 44 px.\r\n• Progress bar находится в первой колонке, percentage — в фиксированной правой колонке 44 px.\r\n• Percentage и Journal chevron используют одинаковый визуальный правый inset 12 px.\r\n• Journal сохраняет ту же внешнюю ширину 536 px и больше не имеет собственного отличающегося horizontal padding справа.\r\n• Buttons row не перемещалась и остаётся центрированной как в 0.0.60.\r\n• Header, window size, status icon, button sizes, Journal size, handlers, bindings и состояния не менялись.",
     "rolloutPercent": 100,
     "blockedVersions": []
   },
