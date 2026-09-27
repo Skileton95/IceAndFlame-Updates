@@ -7,12 +7,12 @@
     "publicKeyId": ""
   },
   "patcher": {
-    "version": "0.0.47",
-    "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-0.0.47/IceAndFlamePatcher.exe",
+    "version": "0.0.48",
+    "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-0.0.48/IceAndFlamePatcher.exe",
     "urls": [],
-    "sha256": "dbaa58db1af0ad8ece5a8dcbc29b1ef36348730a2d30d3e721de418feee79101",
+    "sha256": "bb4868d4b446d42b82891d430d3ecf13ab68832644b7db69626dabefc38fbdc3",
     "mandatory": false,
-    "releaseNotes": "0.0.47\r\n\r\n• Проверка обновлений патчера ускорена с 2 минут до 5 секунд.\r\n• Пока патчер открыт, новая версия появляется практически сразу после публикации manifest.\r\n• Запрос manifest дополнительно отправляется с no-cache / no-store / max-age=0 и Pragma: no-cache.\r\n• Уникальный cache-buster в URL сохранён, поэтому промежуточный CDN-кэш не должен задерживать новую версию.\r\n• Когда окно обновления уже показано, лишние сетевые проверки приостанавливаются.\r\n• После нажатия «Позже» проверки не выполняются до окончания выбранной паузы.\r\n• Проверка при обычном запуске патчера остаётся немедленной.",
+    "releaseNotes": "0.0.48\r\n\r\n• Затемнение фона под модальными окнами сделано заметно светлее.\r\n• Прозрачность overlay снижена, чтобы основной интерфейс оставался читаемым.\r\n• Blur уменьшен с 10px до 6px, поэтому фон меньше «проваливается» в темноту.",
     "rolloutPercent": 100,
     "blockedVersions": []
   },
