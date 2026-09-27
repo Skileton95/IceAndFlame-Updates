@@ -7,12 +7,12 @@
     "publicKeyId": ""
   },
   "patcher": {
-    "version": "0.0.59",
-    "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-0.0.59/IceAndFlamePatcher.exe",
+    "version": "0.0.60",
+    "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-0.0.60/IceAndFlamePatcher.exe",
     "urls": [],
-    "sha256": "f6c2c299b8b19fcf23a5cdbc96fed6c35fe9d0af973182408d67976eace9ca6a",
+    "sha256": "80bea77bf0646dc29e6f2e83d6e4aa03ef067d7ce50e71fb2555cc9322effdbf",
     "mandatory": false,
-    "releaseNotes": "0.0.59\r\n\r\n• Финальный визуальный проход MainWindow выполнен по SplashWindow как design-system reference.\r\n• Основное окно уменьшено до 600×324 px без уменьшения читаемости элементов.\r\n• Внешний радиус увеличен до 20 px; нативный HWND и WebUI используют один радиус.\r\n• Outline приведён к splash accent #27AEEB с умеренной прозрачностью.\r\n• Фон MainWindow использует splash gradient #0C2947 → #091C30 → #07131F.\r\n• Старые декоративные background layers скрыты, чтобы MainWindow не выглядел как другая тема.\r\n• Header 72 px; logo 44 px; title 19 px; versions 11 px.\r\n• Settings / Minimize / Close используют одинаковые прозрачные 32×32 controls с splash-style hover.\r\n• Content margin унифицирован на 32 px.\r\n• Status icon уменьшен до 44 px; glow ослаблен; title 16.5 px; subtitle 11.5 px.\r\n• Status и progress сгруппированы компактнее: 24 px между ними.\r\n• Progress bar приведён к splash language: 10 px track, 8 px fill, gradient cyan/teal, percentage 44 px.\r\n• Обе action buttons 218×44 px, gap 16 px, radius 9 px; glossy/bevel/shadow убраны.\r\n• Secondary button теперь flat dark-blue active control, а не metallic/disabled-looking.\r\n• Journal уменьшен до 38 px collapsed height, border opacity снижена, gradient убран.\r\n• State changes не меняют геометрию или размер окна; manual Journal expansion сохраняет существующее поведение.",
+    "releaseNotes": "0.0.60\r\n\r\n• Финальный visual polish без изменения Grid, размеров окна, content margins, размеров кнопок, Journal, Status icon или бизнес-логики.\r\n• Удалён legacy glossy pseudo-layer action buttons, из-за которого Primary сохраняла пластиковый highlight несмотря на поздние стили.\r\n• Primary оставлена синей, но переведена на мягкий flat vertical gradient без bevel/glow/shadow.\r\n• Secondary полностью очищена от metallic gradient и использует Splash track color #10283E с border на базе #3C789F.\r\n• Progress MainWindow приведён к токенам SplashWindow: track #10283E, border #3C789F, gradient #17E1B0 → #1AD8BE → #20CEE0 → #2AB8F6.\r\n• Старый высокий glossy highlight progress заменён на тонкую 2px подсветку.\r\n• Success title переведён с яркого green на splash cyan/teal #20CEE0; ring/check остаются немного зеленее.\r\n• Progress визуально поднят на 8 px; button row — на 5 px. Grid и размеры секций не изменены.\r\n• Window controls используют splash foreground #BFD4E7, hover #17364F, pressed #204968; click-area 30×30 px.\r\n• Settings icon стала контрастнее, без постоянной рамки.",
     "rolloutPercent": 100,
     "blockedVersions": []
   },
