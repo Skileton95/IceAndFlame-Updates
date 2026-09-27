@@ -1,47 +1,55 @@
 {
-  "schemaVersion": 3,
-  "channel": "stable",
-  "security": {
-    "signatureRequired": false,
-    "signatureUrl": "",
-    "publicKeyId": ""
-  },
-  "patcher": {
-    "version": "0.0.52",
-    "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-0.0.52/IceAndFlamePatcher.exe",
-    "urls": [],
-    "sha256": "2d52a45919caf2e425a5b4a932aff0cd2b0b62c3bb346c4f00e5b3cdde27fbbc",
-    "mandatory": false,
-    "releaseNotes": "0.0.52\r\n\r\n• Восстановлено стабильное состояние патчера из версии 0.0.47.\r\n• Интерфейс и логика после 0.0.47 откатаны.\r\n• Номер версии повышен до 0.0.52, чтобы пользователи с 0.0.48–0.0.51 получили восстановленную сборку через обычное автообновление.\r\n• Сохранена быстрая проверка обновлений примерно каждые 5 секунд.\r\n• Сохранены no-cache/no-store запросы manifest для быстрого получения новой версии.",
-    "rolloutPercent": 100,
-    "blockedVersions": []
-  },
-  "translation": {
-    "version": "0.0.1",
-    "minPatcherVersion": "0.0.4",
-    "releaseNotes": "Первый релиз русификатора в новой системе обновлений.",
-    "game": {
-      "minBuild": "",
-      "maxBuild": "",
-      "blockUnknownBuild": false
-    },
-    "files": [
-      {
-        "name": "~RU_PATCH_1_P.pak",
-        "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/translation-0.0.1/RU_PATCH_1_P.pak",
-        "urls": [],
-        "sha256": "73cf03a7b2b9ed15670c45a2c30135c4e12b33e14e682f2b048a1ed85c610c7d"
-      },
-      {
-        "name": "~RU_QFONT.pak",
-        "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/translation-0.0.1/RU_QFONT.pak",
-        "urls": [],
-        "sha256": "6b564af9e47a3b7a4f43fb8ee449ac0c8a7b2c485e5828494dc2deb51d1119ef"
-      }
-    ]
-  },
-  "support": {
-    "diagnosticsUploadUrl": "",
-    "statusUrl": ""
-  }
+    "schemaVersion":  3,
+    "channel":  "stable",
+    "security":  {
+                     "signatureRequired":  false,
+                     "signatureUrl":  "",
+                     "publicKeyId":  ""
+                 },
+    "patcher":  {
+                    "version":  "0.0.52",
+                    "url":  "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-0.0.52/IceAndFlamePatcher.exe",
+                    "urls":  [
+
+                             ],
+                    "sha256":  "2d52a45919caf2e425a5b4a932aff0cd2b0b62c3bb346c4f00e5b3cdde27fbbc",
+                    "mandatory":  false,
+                    "releaseNotes":  "0.0.52\r\n\r\n• Восстановлено стабильное состояние патчера из версии 0.0.47.\r\n• Интерфейс и логика после 0.0.47 откатаны.\r\n• Номер версии повышен до 0.0.52, чтобы пользователи с 0.0.48–0.0.51 получили восстановленную сборку через обычное автообновление.\r\n• Сохранена быстрая проверка обновлений примерно каждые 5 секунд.\r\n• Сохранены no-cache/no-store запросы manifest для быстрого получения новой версии.",
+                    "rolloutPercent":  100,
+                    "blockedVersions":  [
+
+                                        ]
+                },
+    "translation":  {
+                        "version":  "0.0.2",
+                        "minPatcherVersion":  "0.0.4",
+                        "releaseNotes":  "Первый релиз русификатора в новой системе обновлений.",
+                        "game":  {
+                                     "minBuild":  "",
+                                     "maxBuild":  "",
+                                     "blockUnknownBuild":  false
+                                 },
+                        "files":  [
+                                      {
+                                          "name":  "~RU_PATCH_1_P.pak",
+                                          "url":  "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/translation-0.0.2/RU_PATCH_1_P.pak",
+                                          "urls":  [
+
+                                                   ],
+                                          "sha256":  "73cf03a7b2b9ed15670c45a2c30135c4e12b33e14e682f2b048a1ed85c610c7d"
+                                      },
+                                      {
+                                          "name":  "~RU_QFONT.pak",
+                                          "url":  "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/translation-0.0.2/RU_QFONT.pak",
+                                          "urls":  [
+
+                                                   ],
+                                          "sha256":  "6b564af9e47a3b7a4f43fb8ee449ac0c8a7b2c485e5828494dc2deb51d1119ef"
+                                      }
+                                  ]
+                    },
+    "support":  {
+                    "diagnosticsUploadUrl":  "",
+                    "statusUrl":  ""
+                }
 }
