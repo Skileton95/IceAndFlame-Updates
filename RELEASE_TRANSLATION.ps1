@@ -198,6 +198,29 @@ $title = switch ($Channel) {
 }
 $releaseBaseUrl = "https://github.com/$Repo/releases/download/$tag"
 
+# Refuse an accidental version-only release when every package hash is
+# identical to the currently published translation. The patcher is content-
+# based: identical hashes mean there is nothing to download or replace.
+$unchangedPackages = @()
+foreach ($file in $resolvedFiles) {
+    $currentEntry = $manifest.translation.files |
+        Where-Object { [string]$_.name -eq [string]$file.InstallName }
+
+    if ($null -ne $currentEntry -and
+        [string]$currentEntry.sha256 -eq [string]$file.Sha256) {
+        $unchangedPackages += $file.InstallName
+    }
+}
+
+if ($unchangedPackages.Count -eq $resolvedFiles.Count -and -not $Force) {
+    throw @"
+All translation package hashes are identical to the currently published version $currentVersion.
+There is no file update for the patcher to install, so users will not see an update prompt.
+Replace the files in '$PackageDir' with the new build and publish a new version.
+Use -Force only if you intentionally want a metadata-only release.
+"@
+}
+
 Write-Step "Checking release tag $tag"
 $oldPreference = $ErrorActionPreference
 try {
