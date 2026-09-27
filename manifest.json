@@ -7,12 +7,12 @@
     "publicKeyId": ""
   },
   "patcher": {
-    "version": "0.0.61",
-    "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-0.0.61/IceAndFlamePatcher.exe",
+    "version": "0.0.62",
+    "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-0.0.62/IceAndFlamePatcher.exe",
     "urls": [],
-    "sha256": "76625f0158fba8b3a08865b6d2c0fbd2854d8a36a7812016551bd08d8e00daa2",
+    "sha256": "6d65116ad397e518942f87067ba4fac9dcd88681594d50ba1d8da285b0ac4b7b",
     "mandatory": false,
-    "releaseNotes": "0.0.61\r\n\r\n• Исправлена только внутренняя горизонтальная асимметрия MainWindow; общий дизайн, размер окна, вертикальная геометрия и бизнес-логика не менялись.\r\n• MainContent закреплён как единый горизонтальный контейнер: 32 px слева и 32 px справа, рабочая ширина 536 px.\r\n• Status, Progress и Journal теперь растягиваются по одной и той же grid-column и используют абсолютно одинаковые content bounds.\r\n• Progress row оформлен как единый Grid: * | 12 px | 44 px.\r\n• Progress bar находится в первой колонке, percentage — в фиксированной правой колонке 44 px.\r\n• Percentage и Journal chevron используют одинаковый визуальный правый inset 12 px.\r\n• Journal сохраняет ту же внешнюю ширину 536 px и больше не имеет собственного отличающегося horizontal padding справа.\r\n• Buttons row не перемещалась и остаётся центрированной как в 0.0.60.\r\n• Header, window size, status icon, button sizes, Journal size, handlers, bindings и состояния не менялись.",
+    "releaseNotes": "0.0.62\r\n\r\n• Исправлена только композиция Buttons row относительно общей content grid.\r\n• Buttons row теперь занимает ту же grid-column шириной 536 px, что Status / Progress / Journal.\r\n• Внутренняя структура Buttons row: * | 198 px | 16 px | 198 px | *.\r\n• Пара кнопок центрируется самой общей grid, а не отдельным flex-контейнером с независимой визуальной шириной.\r\n• Обе кнопки теперь одинаковые 198×40 px.\r\n• Центр кнопочной группы совпадает с центром Progress row и общей content area.\r\n• Header, Status, Progress, Journal, окно, бизнес-логика, handlers, bindings и состояния не изменялись.",
     "rolloutPercent": 100,
     "blockedVersions": []
   },
