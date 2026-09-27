@@ -7,12 +7,12 @@
     "publicKeyId": ""
   },
   "patcher": {
-    "version": "0.0.38",
-    "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-0.0.38/IceAndFlamePatcher.exe",
+    "version": "0.0.39",
+    "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-0.0.39/IceAndFlamePatcher.exe",
     "urls": [],
-    "sha256": "298bce99f4304ac159c2d982dcff82689cdd4f4117edd5625e643accc90a35fa",
+    "sha256": "4f475a2ed8b3a999537333c8c3bb3149b3e0160d65bb71c702ace8fd090e5dc3",
     "mandatory": false,
-    "releaseNotes": "0.0.38\r\n\r\n• Существенно сокращён именно разрыв между окончанием загрузки обновления и запуском новой версии.\r\n• Убран полный копирующий шаг current exe → temporary updater. Для helper-режима теперь используется уже скачанный и проверенный новый IceAndFlamePatcher.exe.\r\n• Для текущей версии больше не создаётся 72+ MB backup через File.Copy: старый exe переименовывается в .backup через быстрый файловый move.\r\n• Убрано повторное SHA-256 чтение всего установленного exe внутри helper во время видимого restart-gap. Загруженный файл уже проверяется SHA-256 основным патчером непосредственно перед hand-off.\r\n• Защита сохранена: если новая версия не поднимет WebUI и не создаст health marker, helper автоматически откатывает .backup.\r\n• Rollback также использует быстрый move вместо повторного полного копирования.\r\n• В результате в обычном случае после 100% остаётся только один необходимый copy нового exe на место старого + старт процесса; остальные крупные I/O операции из критического пути удалены.",
+    "releaseNotes": "0.0.39\r\n\r\n• Самообновление переведено на атомарную замену IceAndFlamePatcher.exe.\r\n• Основной exe больше не исчезает с рабочего стола между старой и новой версией.\r\n• Новая версия заранее копируется в скрытый staging-файл рядом с текущим exe.\r\n• После завершения старого процесса File.Replace атомарно подменяет содержимое по тому же пути и одновременно создаёт скрытый rollback-файл.\r\n• Имя и путь IceAndFlamePatcher.exe остаются постоянными, поэтому Проводник не должен переставлять значок на рабочем столе.\r\n• При неудачном health-check выполняется атомарный rollback на предыдущую версию.\r\n• Ускоренный restart и пропуск повторной проверки manifest после самообновления сохранены.",
     "rolloutPercent": 100,
     "blockedVersions": []
   },
