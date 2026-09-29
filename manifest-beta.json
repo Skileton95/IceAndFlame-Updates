@@ -7,19 +7,19 @@
     "publicKeyId": ""
   },
   "patcher": {
-    "version": "0.0.83",
-    "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-beta-0.0.83/WOJDPatcher.exe",
+    "version": "0.0.84",
+    "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-beta-0.0.84/WOJDPatcher.exe",
     "urls": [],
-    "sha256": "81ebe502457469c458a8d20d484adb9d61a2e4a5d223aa2d16c135be58cee64d",
+    "sha256": "0b1297dc09f2983e9a2c5d392d4fba315d5b59c2b46ffdcb416417a7b8ad00ca",
     "mandatory": false,
-    "releaseNotes": "0.0.82\r\n\r\n• Добавлена безопасная работа с русификатором, который был установлен вручную до использования WOJD Patcher.\r\n• Если существующие файлы полностью совпадают с текущим manifest, патчер автоматически принимает их как установленную актуальную версию без повторной загрузки.\r\n• Если обнаружены существующие, но устаревшие или неполные файлы, статус показывает «Обнаружен существующий русификатор».\r\n• Перед первой заменой таких файлов автоматически создаётся точка отката «До подключения к WOJD Patcher», даже если обычное создание резервных копий отключено.\r\n• Повторная попытка установки не создаёт дубликаты этой первоначальной точки отката.\r\n• При восстановлении точки «До подключения к WOJD Patcher» версия снова считается неизвестной, и патчер повторно определяет состояние файлов при проверке.",
+    "releaseNotes": "0.0.84\r\n\r\n• Каналы обновлений окончательно упрощены до Stable и Beta; остатки Dev удалены из promotion workflow и документации.\r\n• Beta теперь использует актуальную Stable-версию русификатора и Stable-историю переводов, поэтому тестирование патчера не откатывает перевод на старую beta-версию.\r\n• Promotion упрощён до одного безопасного маршрута Beta → Stable.\r\n• При продвижении в Stable используется тот же EXE, который был проверен в Beta; перед публикацией повторно сверяется SHA-256, пересборки нет.\r\n• Добавлен автоматический visual regression: Actions сохраняет PNG основных состояний патчера и окна Settings.\r\n• Добавлена DPI/rasterization-проверка WebView2 на 100%, 125%, 150% и 175% с повторной проверкой геометрии.\r\n• После Authenticode-подписи Actions теперь проверяет, что подпись EXE действительно имеет статус Valid.\r\n• В Settings Beta явно отмечена как тестовый канал, а версия патчера в разделе «О программе» получает суффикс Beta.\r\n• Визуал Settings аккуратно выровнен: более спокойные секции, scrollbar, рамки и интервалы без изменения структуры и функций.",
     "rolloutPercent": 100,
     "blockedVersions": []
   },
   "translation": {
-    "version": "0.0.1",
+    "version": "0.0.6",
     "minPatcherVersion": "0.0.4",
-    "releaseNotes": "Бета-канал пока синхронизирован со стабильным русификатором.",
+    "releaseNotes": "Первый релиз русификатора в новой системе обновлений.",
     "game": {
       "minBuild": "",
       "maxBuild": "",
@@ -28,13 +28,13 @@
     "files": [
       {
         "name": "~RU_PATCH_1_P.pak",
-        "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/translation-0.0.1/RU_PATCH_1_P.pak",
+        "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/translation-0.0.6/RU_PATCH_1_P.pak",
         "urls": [],
-        "sha256": "73cf03a7b2b9ed15670c45a2c30135c4e12b33e14e682f2b048a1ed85c610c7d"
+        "sha256": "6e8d0c5f953d46238178617b4bfa90b43b0e78ebaee89d182c2200115c9cd188"
       },
       {
         "name": "~RU_QFONT.pak",
-        "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/translation-0.0.1/RU_QFONT.pak",
+        "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/translation-0.0.6/RU_QFONT.pak",
         "urls": [],
         "sha256": "6b564af9e47a3b7a4f43fb8ee449ac0c8a7b2c485e5828494dc2deb51d1119ef"
       }
