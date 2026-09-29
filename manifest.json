@@ -7,12 +7,12 @@
     "publicKeyId": ""
   },
   "patcher": {
-    "version": "0.0.80",
-    "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-0.0.80/WOJDPatcher.exe",
+    "version": "0.0.81",
+    "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-0.0.81/WOJDPatcher.exe",
     "urls": [],
-    "sha256": "5f94be33ee32ca2a1ef352b4e5d8500d170571c56faad1349ea6e66522894a51",
+    "sha256": "e2d20a8dbce1381a124c6140d56d927c9048027119ad34d9a151077d2a4e4c87",
     "mandatory": false,
-    "releaseNotes": "0.0.80\r\n\r\n• Патчер переименован в WOJD Patcher.\r\n• Исполняемый файл и проект теперь называются WOJDPatcher.exe / WOJDPatcher.csproj.\r\n• Внутренние namespace, идентификаторы, логи, диагностика, автозапуск и служебные файлы переведены на WOJDPatcher.\r\n• Обновлён WebUI и заголовки окон без изменения логики патчера.\r\n• Репозитории обновлений сохранены под прежними GitHub-именами для совместимости с существующей системой обновлений.",
+    "releaseNotes": "0.0.81\r\n\r\n• Исправлено создание папки WOJDPatcher.exe.WebView2 рядом с патчером.\r\n• Данные WebView2 теперь хранятся в %LOCALAPPDATA%\\WOJDPatcher\\webview2.\r\n• В portable-режиме данные WebView2 хранятся в data\\webview2 рядом с патчером.\r\n• При запуске патчер пытается удалить старую служебную папку *.exe.WebView2, если она осталась от предыдущей версии.\r\n• Интерфейс и логика обновления русификатора не изменялись.",
     "rolloutPercent": 100,
     "blockedVersions": []
   },
