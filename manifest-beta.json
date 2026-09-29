@@ -7,12 +7,12 @@
     "publicKeyId": ""
   },
   "patcher": {
-    "version": "0.0.85",
-    "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-beta-0.0.85/WOJDPatcher.exe",
+    "version": "0.0.86",
+    "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-beta-0.0.86/WOJDPatcher.exe",
     "urls": [],
-    "sha256": "56466582de2b3ca5064f8097a283bfeace0e18da32b4748d8bdbbcf9e1161ab2",
+    "sha256": "35f5f981fb7ee84fa33c7baa99c550fb53f588fe4af548aa52bf37502faaa124",
     "mandatory": false,
-    "releaseNotes": "0.0.85\r\n\r\n• Исправлена точность visual regression: тестовые состояния теперь корректно переключают цвет статуса, status-icon, процент активной операции и иконки кнопок.\r\n• Снимок Settings делается после завершения анимации открытия, поэтому artifact отражает финальное состояние окна без просвечивания основного экрана.\r\n• DPI-проверка теперь дополнительно подтверждает реальный window.devicePixelRatio для 100%, 125%, 150% и 175%, а не только геометрию.\r\n• Все изменения 0.0.84 по Stable/Beta, Beta → Stable promotion, синхронизации русификатора, Authenticode-проверке и Settings сохранены.",
+    "releaseNotes": "0.0.86\r\n\r\n• Усилена защита от одновременного запуска: именованный mutex дополнен общим lock-файлом в LocalAppData, поэтому две копии WOJD Patcher из разных папок или разных версий не могут выполнять операции одновременно.\r\n• Сохранена совместимость с уже выпущенными версиями: новый guard использует прежнее имя mutex и корректно ждёт освобождения блокировки при перезапуске с правами администратора.\r\n• Добавлена проверка целостности самого WOJDPatcher.exe при запуске по доверенному SHA-256.\r\n• После self-update SHA-256 новой версии записывается до health-check; при rollback доверенный SHA автоматически возвращается к восстановленному EXE.\r\n• Для первого перехода со старой версии поддержана фиксация SHA из update-state, а при обычной работе доверенный SHA принимается из manifest, если версия и фактический hash совпадают.\r\n• При изменении EXE без изменения доверенной версии патчер останавливает запуск до выполнения операций и предлагает скачать официальный файл заново.\r\n• В headless self-test добавлены проверки межверсионной single-instance блокировки и обнаружения изменения доверенного EXE.",
     "rolloutPercent": 100,
     "blockedVersions": []
   },
