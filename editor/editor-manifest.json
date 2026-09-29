@@ -1,5 +1,6 @@
 {
-  "version": "0.2.0",
-  "url": "https://raw.githubusercontent.com/Skileton95/IceAndFlame-Updates/main/editor/WOJDLocalizationEditor.exe",
-  "sha256": ""
+  "version": "0.3.1",
+  "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/editor-0.3.1/WOJDLocalizationEditor.exe",
+  "sha256": "d7411cbd8f5bcae9c1f935bef98463067949fd8433f39337c536835ca174415e",
+  "notes": "## WOJD Localization Editor 0.3.1\r\n\r\n- Добавлено отдельное окно «Доступно обновление».\r\n- Показ текущей и новой версии.\r\n- Добавлен блок «Что нового».\r\n- Кнопки «Обновить» и «Позже».\r\n- Сохранены существующие функции открытия, редактирования, сохранения и поиска."
 }
