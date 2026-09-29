@@ -7,12 +7,12 @@
     "publicKeyId": ""
   },
   "patcher": {
-    "version": "0.0.84",
-    "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-beta-0.0.84/WOJDPatcher.exe",
+    "version": "0.0.85",
+    "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-beta-0.0.85/WOJDPatcher.exe",
     "urls": [],
-    "sha256": "0b1297dc09f2983e9a2c5d392d4fba315d5b59c2b46ffdcb416417a7b8ad00ca",
+    "sha256": "56466582de2b3ca5064f8097a283bfeace0e18da32b4748d8bdbbcf9e1161ab2",
     "mandatory": false,
-    "releaseNotes": "0.0.84\r\n\r\n• Каналы обновлений окончательно упрощены до Stable и Beta; остатки Dev удалены из promotion workflow и документации.\r\n• Beta теперь использует актуальную Stable-версию русификатора и Stable-историю переводов, поэтому тестирование патчера не откатывает перевод на старую beta-версию.\r\n• Promotion упрощён до одного безопасного маршрута Beta → Stable.\r\n• При продвижении в Stable используется тот же EXE, который был проверен в Beta; перед публикацией повторно сверяется SHA-256, пересборки нет.\r\n• Добавлен автоматический visual regression: Actions сохраняет PNG основных состояний патчера и окна Settings.\r\n• Добавлена DPI/rasterization-проверка WebView2 на 100%, 125%, 150% и 175% с повторной проверкой геометрии.\r\n• После Authenticode-подписи Actions теперь проверяет, что подпись EXE действительно имеет статус Valid.\r\n• В Settings Beta явно отмечена как тестовый канал, а версия патчера в разделе «О программе» получает суффикс Beta.\r\n• Визуал Settings аккуратно выровнен: более спокойные секции, scrollbar, рамки и интервалы без изменения структуры и функций.",
+    "releaseNotes": "0.0.85\r\n\r\n• Исправлена точность visual regression: тестовые состояния теперь корректно переключают цвет статуса, status-icon, процент активной операции и иконки кнопок.\r\n• Снимок Settings делается после завершения анимации открытия, поэтому artifact отражает финальное состояние окна без просвечивания основного экрана.\r\n• DPI-проверка теперь дополнительно подтверждает реальный window.devicePixelRatio для 100%, 125%, 150% и 175%, а не только геометрию.\r\n• Все изменения 0.0.84 по Stable/Beta, Beta → Stable promotion, синхронизации русификатора, Authenticode-проверке и Settings сохранены.",
     "rolloutPercent": 100,
     "blockedVersions": []
   },
