@@ -1,6 +1,6 @@
 {
-  "version": "0.4.1",
-  "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/editor-0.4.1/WOJDLocalizationEditor.exe",
-  "sha256": "b06ade59490ba7b3c719f125ccdec626fed773f96d339707dea2cfc84ccf3648",
-  "notes": "## WOJD Localization Editor 0.4.1\r\n\r\n- Исправлено автообновление: скачанный EXE теперь закрывается перед проверкой SHA-256.\r\n- Устранена ошибка «The process cannot access the file ... because it is being used by another process».\r\n- Интерфейс и функциональность 0.4.0 не изменены."
+  "version": "0.5.0",
+  "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/editor-0.5.0/WOJDLocalizationEditor.exe",
+  "sha256": "83758456e4f0a8eec5dbd2017eecbe1b46a8f6f9a1b2d08c78b4618b4e11395a",
+  "notes": "## WOJD Localization Editor 0.5.0\r\n\r\n- Добавлены отдельные парсеры JSON, NDJSON/JSONL, CSV и TSV.\r\n- Сохранена поддержка KEY=VALUE, TAB, | и обычных текстовых строк.\r\n- Для структурированных форматов редактор изменяет поле перевода, а не редактирует файл как сплошной текст.\r\n- Добавлена расширенная валидация: пустой перевод, дубли ключей, плейсхолдеры, переносы строк, запрещённый нулевой символ и заметное превышение длины.\r\n- Раздел «С ошибками» теперь использует результаты полной проверки.\r\n- Добавлены Undo / Redo: Ctrl+Z, Ctrl+Y и Ctrl+Shift+Z.\r\n- Добавлена кнопка возврата выбранной строки к состоянию на момент открытия файла.\r\n- История ввода объединяет последовательный набор текста, чтобы отмена не работала по одному символу.\r\n- Сохранены .bak, поиск, фильтры, избранное и автообновление."
 }
