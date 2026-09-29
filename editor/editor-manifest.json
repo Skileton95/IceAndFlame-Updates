@@ -1,6 +1,6 @@
 {
-  "version": "0.4.0",
-  "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/editor-0.4.0/WOJDLocalizationEditor.exe",
-  "sha256": "f42076d3d8e8a9ec26b1812bbe1bab1b13cc182f41ce35fe74b3d7fd5b5962a8",
-  "notes": "## WOJD Localization Editor 0.4.0\r\n\r\n- Интерфейс перестроен по выбранному макету: навигация слева, таблица строк по центру и редактор выбранной строки справа.\r\n- Добавлен структурированный просмотр строк с ключом, оригиналом, переводом и статусом.\r\n- Добавлены фильтры и счётчики: все строки, непереведённые, изменённые, ошибки, проверенные и избранное.\r\n- Поиск теперь фильтрует ключи, оригинал и перевод.\r\n- Импорт использует открытие файла, экспорт — «Сохранить как».\r\n- Сохранены резервные копии .bak, проверка плейсхолдеров и существующее автообновление."
+  "version": "0.4.1",
+  "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/editor-0.4.1/WOJDLocalizationEditor.exe",
+  "sha256": "b06ade59490ba7b3c719f125ccdec626fed773f96d339707dea2cfc84ccf3648",
+  "notes": "## WOJD Localization Editor 0.4.1\r\n\r\n- Исправлено автообновление: скачанный EXE теперь закрывается перед проверкой SHA-256.\r\n- Устранена ошибка «The process cannot access the file ... because it is being used by another process».\r\n- Интерфейс и функциональность 0.4.0 не изменены."
 }
