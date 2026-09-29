@@ -7,12 +7,12 @@
     "publicKeyId": ""
   },
   "patcher": {
-    "version": "0.0.79",
-    "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-0.0.79/IceAndFlamePatcher.exe",
+    "version": "0.0.80",
+    "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-0.0.80/WOJDPatcher.exe",
     "urls": [],
-    "sha256": "335eab6f3ad7a652f9aaa9ad72afeb344af74afd617ea7abf2713ce474741c13",
+    "sha256": "5f94be33ee32ca2a1ef352b4e5d8500d170571c56faad1349ea6e66522894a51",
     "mandatory": false,
-    "releaseNotes": "0.0.62\r\n\r\n• Исправлена только композиция Buttons row относительно общей content grid.\r\n• Buttons row теперь занимает ту же grid-column шириной 536 px, что Status / Progress / Journal.\r\n• Внутренняя структура Buttons row: * | 198 px | 16 px | 198 px | *.\r\n• Пара кнопок центрируется самой общей grid, а не отдельным flex-контейнером с независимой визуальной шириной.\r\n• Обе кнопки теперь одинаковые 198×40 px.\r\n• Центр кнопочной группы совпадает с центром Progress row и общей content area.\r\n• Header, Status, Progress, Journal, окно, бизнес-логика, handlers, bindings и состояния не изменялись.",
+    "releaseNotes": "0.0.80\r\n\r\n• Патчер переименован в WOJD Patcher.\r\n• Исполняемый файл и проект теперь называются WOJDPatcher.exe / WOJDPatcher.csproj.\r\n• Внутренние namespace, идентификаторы, логи, диагностика, автозапуск и служебные файлы переведены на WOJDPatcher.\r\n• Обновлён WebUI и заголовки окон без изменения логики патчера.\r\n• Репозитории обновлений сохранены под прежними GitHub-именами для совместимости с существующей системой обновлений.",
     "rolloutPercent": 100,
     "blockedVersions": []
   },
