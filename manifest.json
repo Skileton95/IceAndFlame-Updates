@@ -7,10 +7,10 @@
     "publicKeyId": ""
   },
   "patcher": {
-    "version": "0.0.76",
-    "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-0.0.76/IceAndFlamePatcher.exe",
+    "version": "0.0.77",
+    "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-0.0.77/IceAndFlamePatcher.exe",
     "urls": [],
-    "sha256": "05a8eec3237a8ba26443ce1134c8f11fa6b5d08a9281bc7aa079fca6263b87ce",
+    "sha256": "ef129706680e30496696c9cb6770595cf17296620a0a021ad8b645a4d34990e2",
     "mandatory": false,
     "releaseNotes": "0.0.62\r\n\r\n• Исправлена только композиция Buttons row относительно общей content grid.\r\n• Buttons row теперь занимает ту же grid-column шириной 536 px, что Status / Progress / Journal.\r\n• Внутренняя структура Buttons row: * | 198 px | 16 px | 198 px | *.\r\n• Пара кнопок центрируется самой общей grid, а не отдельным flex-контейнером с независимой визуальной шириной.\r\n• Обе кнопки теперь одинаковые 198×40 px.\r\n• Центр кнопочной группы совпадает с центром Progress row и общей content area.\r\n• Header, Status, Progress, Journal, окно, бизнес-логика, handlers, bindings и состояния не изменялись.",
     "rolloutPercent": 100,
