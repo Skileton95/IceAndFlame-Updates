@@ -1,6 +1,0 @@
-{
-  "version": "0.10.1",
-  "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/editor-0.10.1/WOJDLocalizationEditor.exe",
-  "sha256": "2194a67b21b10f3c54dbf8f3157c32e4cba776935c5639ef82738885d41b2493",
-  "notes": "WOJD Localization Editor 0.10.1\r\n\r\n- Удалён устаревший режим «Сравнение версий».\r\n- Удалены связанные действия переноса и сохранения результата из режима сравнения.\r\n- Глоссарий проекта и Translation Memory сохранены без изменений."
-}
