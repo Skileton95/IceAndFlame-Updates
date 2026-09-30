@@ -1,6 +1,6 @@
 {
-  "version": "0.7.3",
-  "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/editor-0.7.3/WOJDLocalizationEditor.exe",
-  "sha256": "d1a9a159221228a3dd80b44b1b71bc6ebaf372f38864041440a72567a6a84100",
-  "notes": "## WOJD Localization Editor 0.7.3\r\n\r\n- Перевод длиннее оригинала больше не считается ошибкой или предупреждением.\r\n- Полностью удалена проверка LENGTH из валидатора строк.\r\n- Сообщение корректной строки больше не упоминает проверку длины.\r\n- Текстовый символ ⚙ у кнопки «Настройки» заменён на векторную шестерёнку из существующего ассета settings.svg патчера."
+  "version": "0.7.4",
+  "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/editor-0.7.4/WOJDLocalizationEditor.exe",
+  "sha256": "035c7e0265491a04e19d8c87a1f965779b0e8ab6b1283ac81910646f1a780b9d",
+  "notes": "## WOJD Localization Editor 0.7.4\r\n\r\n- Различие переносов строк между оригиналом и переводом больше не считается ошибкой или предупреждением.\r\n- Полностью удалена проверка LINE_BREAKS из валидатора.\r\n- Сообщение «Строка корректна» больше не упоминает переносы строк.\r\n- Проверка плейсхолдеров и остальных технических ошибок сохранена."
 }
