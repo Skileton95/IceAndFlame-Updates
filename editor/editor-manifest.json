@@ -1,6 +1,6 @@
 {
-  "version": "0.5.3",
-  "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/editor-0.5.3/WOJDLocalizationEditor.exe",
-  "sha256": "fa6136cdfe2d99768d7e541b140e5b818a3658a7aca9f0fad8f009ac58d2d72b",
-  "notes": "## WOJD Localization Editor 0.5.3\r\n\r\n- Исправлено распознавание рабочего WOJD NDJSON: поле перевода `translated` теперь распознаётся напрямую.\r\n- Записи вида `namespace / key / source / translated / locresImport` теперь считаются по одной локализационной записи на JSON-строку.\r\n- Счётчик «Всего строк» снова отражает количество записей NDJSON, поэтому большие базы на 900k+ записей больше не сводятся к нескольким сотням.\r\n- Оптимизирована загрузка больших NDJSON: редактор больше не хранит вторую JsonNode-модель всего файла в памяти.\r\n- При сохранении NDJSON пересобираются только реально изменённые записи; неизменённые строки сохраняются в исходном виде.\r\n- Если `source` пуст, для отображения оригинала используется `locresImport`, когда он доступен."
+  "version": "0.5.4",
+  "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/editor-0.5.4/WOJDLocalizationEditor.exe",
+  "sha256": "a039627a02c93fe0ed906adbfa94e851aaa2600545bbea927702f912f05a1aee",
+  "notes": "## WOJD Localization Editor 0.5.4\r\n\r\n- Исправлена проверка дубликатов ключей в NDJSON.\r\n- Для записей с namespace уникальность теперь проверяется по паре `namespace + key`, а не по одному `key`.\r\n- Одинаковый key в разных namespace больше не помечается как ошибка.\r\n- Для форматов без namespace сохранена проверка дубликатов по key.\r\n- Колонка массового выбора с чекбоксами не используется; таблица начинается с ключа.\r\n- Колонка «Статус» сохранена и теперь отражает реальные проблемы строки: пустой перевод, плейсхолдеры, переносы, длину и корректные дубликаты."
 }
