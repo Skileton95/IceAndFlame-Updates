@@ -1,4 +1,4 @@
-name: Remove all releases
+name: Remove WOJD Localization Editor releases
 
 on:
   push:
@@ -14,17 +14,20 @@ jobs:
   cleanup:
     runs-on: ubuntu-latest
     steps:
-      - name: Delete releases and release tags
+      - name: Delete WOJD Localization Editor releases and tags
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           repo="${{ github.repository }}"
-          gh release list --repo "$repo" --limit 1000 --json tagName --jq '.[].tagName' > release-tags.txt
+          gh release list --repo "$repo" --limit 1000 --json tagName,name \
+            --jq '.[] | select((.tagName | startswith("editor-")) or (.name | contains("WOJD Localization Editor"))) | .tagName' \
+            > editor-release-tags.txt
           while IFS= read -r tag; do
             [ -z "$tag" ] && continue
             echo "Deleting $tag"
             gh release delete "$tag" --repo "$repo" --cleanup-tag --yes
-          done < release-tags.txt
-          echo "Remaining releases:"
-          gh release list --repo "$repo" --limit 20
+          done < editor-release-tags.txt
+          echo "Remaining editor releases:"
+          gh release list --repo "$repo" --limit 1000 --json tagName,name \
+            --jq '.[] | select((.tagName | startswith("editor-")) or (.name | contains("WOJD Localization Editor")))'
