@@ -1,0 +1,132 @@
+name: One-off translation 4.1.10
+
+on:
+  push:
+    paths:
+      - ".github/workflows/release-translation-4.1.10.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      OLD_TAG: translation-0.0.6
+      NEW_TAG: translation-4.1.10
+      VERSION: 4.1.10
+      PATCH_SHA: 6e8d0c5f953d46238178617b4bfa90b43b0e78ebaee89d182c2200115c9cd188
+      FONT_SHA: 6b564af9e47a3b7a4f43fb8ee449ac0c8a7b2c485e5828494dc2deb51d1119ef
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download current translation assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p package
+          gh release download "$OLD_TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern "RU_PATCH_1_P.pak" \
+            --pattern "RU_QFONT.pak" \
+            --dir package
+
+      - name: Verify current asset hashes
+        shell: bash
+        run: |
+          set -euo pipefail
+          patch_sha="$(sha256sum package/RU_PATCH_1_P.pak | awk '{print $1}')"
+          font_sha="$(sha256sum package/RU_QFONT.pak | awk '{print $1}')"
+          test "$patch_sha" = "$PATCH_SHA"
+          test "$font_sha" = "$FONT_SHA"
+          echo "Current translation assets verified."
+
+      - name: Publish translation 4.1.10
+        shell: bash
+        run: |
+          set -euo pipefail
+          notes="Текущая версия русификатора переиздана как 4.1.10 без изменения файлов."
+          if gh release view "$NEW_TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$NEW_TAG" \
+              package/RU_PATCH_1_P.pak \
+              package/RU_QFONT.pak \
+              --repo "$GITHUB_REPOSITORY" \
+              --clobber
+            gh release edit "$NEW_TAG" \
+              --repo "$GITHUB_REPOSITORY" \
+              --title "ICE AND FLAME Translation 4.1.10" \
+              --notes "$notes"
+          else
+            gh release create "$NEW_TAG" \
+              package/RU_PATCH_1_P.pak \
+              package/RU_QFONT.pak \
+              --repo "$GITHUB_REPOSITORY" \
+              --target main \
+              --title "ICE AND FLAME Translation 4.1.10" \
+              --notes "$notes"
+          fi
+
+      - name: Update Stable and Beta manifests
+        shell: python
+        run: |
+          import json
+          from pathlib import Path
+
+          version = "4.1.10"
+          tag = "translation-4.1.10"
+          repo = "Skileton95/IceAndFlame-Updates"
+          notes = "Текущая версия русификатора переиздана как 4.1.10 без изменения файлов."
+          expected = {
+              "~RU_PATCH_1_P.pak": (
+                  "RU_PATCH_1_P.pak",
+                  "6e8d0c5f953d46238178617b4bfa90b43b0e78ebaee89d182c2200115c9cd188",
+              ),
+              "~RU_QFONT.pak": (
+                  "RU_QFONT.pak",
+                  "6b564af9e47a3b7a4f43fb8ee449ac0c8a7b2c485e5828494dc2deb51d1119ef",
+              ),
+          }
+
+          for name in ("manifest.json", "manifest-beta.json"):
+              path = Path(name)
+              data = json.loads(path.read_text(encoding="utf-8-sig"))
+              tr = data["translation"]
+              tr["version"] = version
+              tr["releaseNotes"] = notes
+              for entry in tr["files"]:
+                  if entry["name"] in expected:
+                      release_name, sha = expected[entry["name"]]
+                      entry["url"] = f"https://github.com/{repo}/releases/download/{tag}/{release_name}"
+                      entry["urls"] = []
+                      entry["sha256"] = sha
+              path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+      - name: Commit manifests
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add manifest.json manifest-beta.json
+          git commit -m "Release translation 4.1.10"
+          git push origin HEAD:main
+
+      - name: Verify published release and manifests
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release view "$NEW_TAG" --repo "$GITHUB_REPOSITORY" --json tagName,name,isPrerelease,assets
+          git pull --ff-only origin main
+          python - <<'PY'
+          import json
+          for name in ("manifest.json", "manifest-beta.json"):
+              data=json.load(open(name, encoding="utf-8"))
+              assert data["translation"]["version"] == "4.1.10", (name, data["translation"]["version"])
+              urls={x["name"]:x["url"] for x in data["translation"]["files"]}
+              assert all("translation-4.1.10" in url for url in urls.values()), (name, urls)
+          print("Both manifests verified at translation 4.1.10.")
+          PY
