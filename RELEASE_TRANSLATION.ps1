@@ -1,4 +1,4 @@
-param(
+﻿param(
     [Parameter(Position = 0)]
     [string]$Version,
     [ValidateSet("stable", "beta", "dev")]
@@ -80,8 +80,10 @@ function Test-VersionFormat {
 }
 
 function Read-RemoteManifest {
-    $responseJson = (& gh api "repos/$Repo/contents/${ManifestName}?ref=$Branch")
-    if ($LASTEXITCODE -ne 0) { throw "Unable to read $ManifestName from GitHub." }
+    param([string]$Name = $ManifestName)
+
+    $responseJson = (& gh api "repos/$Repo/contents/${Name}?ref=$Branch")
+    if ($LASTEXITCODE -ne 0) { throw "Unable to read $Name from GitHub." }
     $response = $responseJson | ConvertFrom-Json
     $base64 = ([string]$response.content) -replace "\s", ""
     $bytes = [Convert]::FromBase64String($base64)
@@ -120,6 +122,83 @@ function Ensure-Property {
     if ($null -eq $Object.PSObject.Properties[$Name]) {
         $Object | Add-Member -NotePropertyName $Name -NotePropertyValue $DefaultValue
     }
+}
+
+function Assert-TranslationManifest {
+    param(
+        $Manifest,
+        [string]$Name,
+        [object[]]$ExpectedFiles,
+        [string]$ExpectedVersion
+    )
+
+    if ($null -eq $Manifest -or $null -eq $Manifest.translation) {
+        throw "$Name does not contain translation data."
+    }
+
+    if ([string]$Manifest.translation.version -ne $ExpectedVersion) {
+        throw "$Name reports translation version $($Manifest.translation.version), expected $ExpectedVersion."
+    }
+
+    if ($null -eq $Manifest.translation.files) {
+        throw "$Name has null translation.files."
+    }
+
+    foreach ($expected in $ExpectedFiles) {
+        $entry = $Manifest.translation.files |
+            Where-Object { [string]$_.name -eq [string]$expected.InstallName }
+
+        if ($null -eq $entry) {
+            throw "$Name is missing '$($expected.InstallName)'."
+        }
+
+        if ($null -eq $entry.urls) {
+            throw "$Name has null urls for '$($expected.InstallName)'. Expected an array."
+        }
+
+        if ([string]$entry.sha256 -ne [string]$expected.Sha256) {
+            throw "$Name hash mismatch for '$($expected.InstallName)'."
+        }
+
+        $expectedUrl = "https://github.com/$Repo/releases/download/$TagPrefix$ExpectedVersion/$($expected.ReleaseName)"
+        if ([string]$entry.url -ne $expectedUrl) {
+            throw "$Name URL mismatch for '$($expected.InstallName)'."
+        }
+    }
+}
+
+function Wait-PublicManifest {
+    param(
+        [string]$Name,
+        [object[]]$ExpectedFiles,
+        [string]$ExpectedVersion
+    )
+
+    $lastError = ""
+    for ($attempt = 1; $attempt -le 60; $attempt++) {
+        try {
+            $cacheBust = [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()
+            $publicUrl = "https://raw.githubusercontent.com/$Repo/$Branch/${Name}?ts=$cacheBust"
+            $publicManifest = Invoke-RestMethod -Uri $publicUrl -Headers @{
+                "Cache-Control" = "no-cache, no-store, max-age=0"
+                "Pragma" = "no-cache"
+            }
+
+            Assert-TranslationManifest -Manifest $publicManifest -Name $Name -ExpectedFiles $ExpectedFiles -ExpectedVersion $ExpectedVersion
+            return $true
+        }
+        catch {
+            $lastError = $_.Exception.Message
+        }
+
+        Start-Sleep -Seconds 2
+    }
+
+    Write-Warning "$Name is committed but the public CDN did not expose the verified version within 120 seconds."
+    if (-not [string]::IsNullOrWhiteSpace($lastError)) {
+        Write-Host " CDN status: $lastError" -ForegroundColor DarkYellow
+    }
+    return $false
 }
 
 Write-Host ""
@@ -313,6 +392,9 @@ try {
     $json = ($manifest | ConvertTo-Json -Depth 40) + [Environment]::NewLine
     [IO.File]::WriteAllText($manifestPath, $json, [Text.UTF8Encoding]::new($false))
 
+    $localManifestCheck = (Get-Content -LiteralPath $manifestPath -Raw) | ConvertFrom-Json
+    Assert-TranslationManifest -Manifest $localManifestCheck -Name $ManifestName -ExpectedFiles $resolvedFiles -ExpectedVersion $Version
+
     $signaturePath = ""
     if ($signManifest) {
         Write-Step "Signing $ManifestName"
@@ -334,84 +416,57 @@ try {
         Put-RemoteFile -Path $signatureName -Message "Sign $Channel translation manifest $Version" -Bytes ([IO.File]::ReadAllBytes($signaturePath)) -ExistingSha $signatureSha
     }
 
-    Write-Step "Verifying committed $ManifestName"
+    $manifestNamesToVerify = @($ManifestName)
 
-    # Verify the authoritative GitHub Contents API first. raw.githubusercontent.com
-    # is CDN-backed and can lag behind a successful commit for a minute or more.
-    # CDN propagation delay must not turn a successful release into a failure.
-    $remoteCheck = Read-RemoteManifest
-    $committedManifest = $remoteCheck.Manifest
+    if ($Channel -eq "stable") {
+        Write-Step "Synchronizing translation to manifest-beta.json"
 
-    if ([string]$committedManifest.translation.version -ne $Version) {
-        throw "Committed manifest reports version $($committedManifest.translation.version), expected $Version."
-    }
+        $betaName = "manifest-beta.json"
+        $betaRemote = Read-RemoteManifest -Name $betaName
+        $betaManifest = $betaRemote.Manifest
 
-    foreach ($file in $resolvedFiles) {
-        $committedEntry = $committedManifest.translation.files |
-            Where-Object { [string]$_.name -eq [string]$file.InstallName }
-
-        if ($null -eq $committedEntry) {
-            throw "Committed manifest is missing '$($file.InstallName)'."
+        if ($null -eq $betaManifest.translation) {
+            throw "$betaName does not contain a valid translation section."
         }
 
-        if ([string]$committedEntry.sha256 -ne [string]$file.Sha256) {
-            throw "Committed manifest hash mismatch for '$($file.InstallName)'."
-        }
+        # Clone the translation object so Stable and Beta receive exactly the same
+        # version, URLs and hashes without changing the Beta patcher channel.
+        $betaManifest.translation = (($manifest.translation | ConvertTo-Json -Depth 40) | ConvertFrom-Json)
+        $betaManifest.channel = "beta"
+
+        $betaManifestPath = Join-Path $tempDir $betaName
+        $betaJson = ($betaManifest | ConvertTo-Json -Depth 40) + [Environment]::NewLine
+        [IO.File]::WriteAllText($betaManifestPath, $betaJson, [Text.UTF8Encoding]::new($false))
+
+        $betaLocalCheck = (Get-Content -LiteralPath $betaManifestPath -Raw) | ConvertFrom-Json
+        Assert-TranslationManifest -Manifest $betaLocalCheck -Name $betaName -ExpectedFiles $resolvedFiles -ExpectedVersion $Version
+
+        Put-RemoteFile -Path $betaName -Message "Sync beta translation $Version" -Bytes ([IO.File]::ReadAllBytes($betaManifestPath)) -ExistingSha $betaRemote.Sha
+        $manifestNamesToVerify += $betaName
     }
 
-    Write-Host " Authoritative manifest verified." -ForegroundColor Green
+    Write-Step "Verifying committed manifests"
+    foreach ($name in $manifestNamesToVerify) {
+        $remoteCheck = Read-RemoteManifest -Name $name
+        Assert-TranslationManifest -Manifest $remoteCheck.Manifest -Name $name -ExpectedFiles $resolvedFiles -ExpectedVersion $Version
+        Write-Host " $name verified." -ForegroundColor Green
+    }
 
     Write-Step "Checking public CDN propagation"
-    $publicVerified = $false
-    $lastPublicError = ""
-
-    for ($attempt = 1; $attempt -le 10; $attempt++) {
-        try {
-            $cacheBust = [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()
-            $publicUrl = "https://raw.githubusercontent.com/$Repo/$Branch/${ManifestName}?ts=$cacheBust"
-            $publicManifest = Invoke-RestMethod -Uri $publicUrl -Headers @{
-                "Cache-Control" = "no-cache, no-store, max-age=0"
-                "Pragma" = "no-cache"
-            }
-
-            if ([string]$publicManifest.translation.version -ne $Version) {
-                throw "CDN still reports version $($publicManifest.translation.version)."
-            }
-
-            $allHashesMatch = $true
-            foreach ($file in $resolvedFiles) {
-                $publicEntry = $publicManifest.translation.files |
-                    Where-Object { [string]$_.name -eq [string]$file.InstallName }
-
-                if ($null -eq $publicEntry -or [string]$publicEntry.sha256 -ne [string]$file.Sha256) {
-                    $allHashesMatch = $false
-                    break
-                }
-            }
-
-            if ($allHashesMatch) {
-                $publicVerified = $true
-                break
-            }
-
-            $lastPublicError = "CDN manifest hashes have not propagated yet."
+    $allPublicVerified = $true
+    foreach ($name in $manifestNamesToVerify) {
+        if (Wait-PublicManifest -Name $name -ExpectedFiles $resolvedFiles -ExpectedVersion $Version) {
+            Write-Host " $name public CDN verified." -ForegroundColor Green
         }
-        catch {
-            $lastPublicError = $_.Exception.Message
-        }
-
-        Start-Sleep -Seconds 2
-    }
-
-    if ($publicVerified) {
-        Write-Host " Public CDN manifest verified." -ForegroundColor Green
-    }
-    else {
-        Write-Warning "Release is committed and valid, but raw.githubusercontent.com has not propagated yet. This is not a release failure."
-        if (-not [string]::IsNullOrWhiteSpace($lastPublicError)) {
-            Write-Host " CDN status: $lastPublicError" -ForegroundColor DarkYellow
+        else {
+            $allPublicVerified = $false
         }
     }
+
+    if (-not $allPublicVerified) {
+        throw "Release is committed, but public manifest verification is still pending. Do not republish the same version; wait for CDN propagation and verify again."
+    }
+
     Write-Host ""
     Write-Host "==========================================" -ForegroundColor DarkGray
     Write-Host " SUCCESS" -ForegroundColor Green
@@ -422,6 +477,9 @@ try {
     Write-Host " Minimum patcher:     $MinPatcherVersion"
     Write-Host " Game range:          $MinGameBuild .. $MaxGameBuild"
     Write-Host " Manifest:            $ManifestName"
+    if ($Channel -eq "stable") {
+        Write-Host " Beta manifest:       synchronized"
+    }
     Write-Host " Manifest signed:     $signManifest"
     Write-Host ""
 }
