@@ -376,7 +376,12 @@ try {
         $entry.url = "$releaseBaseUrl/$($file.ReleaseName)"
 
         $mirror = if ($file.InstallName -eq "~RU_PATCH_1_P.pak") { $PatchMirrorUrl } else { $FontMirrorUrl }
-        if ([string]::IsNullOrWhiteSpace($mirror)) {\n            $entry.urls = @()\n        }\n        else {\n            $entry.urls = @($mirror.Trim())\n        }
+        if ([string]::IsNullOrWhiteSpace($mirror)) {
+            $entry.urls = @()
+        }
+        else {
+            $entry.urls = @($mirror.Trim())
+        }
         $entry.sha256 = $file.Sha256
     }
 
