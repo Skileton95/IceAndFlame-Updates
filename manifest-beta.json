@@ -17,9 +17,9 @@
     "blockedVersions": []
   },
   "translation": {
-    "version": "4.1.10",
-    "minPatcherVersion": "0.0.4",
-    "releaseNotes": "Текущая версия русификатора переиздана как 4.1.10 без изменения файлов.",
+    "version": "4.2.11",
+    "minPatcherVersion": "0.0.0",
+    "releaseNotes": "Обновление русификатора 4.2.11.",
     "game": {
       "minBuild": "",
       "maxBuild": "",
@@ -28,14 +28,14 @@
     "files": [
       {
         "name": "~RU_PATCH_1_P.pak",
-        "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/translation-4.1.10/RU_PATCH_1_P.pak",
-        "urls": [],
-        "sha256": "6e8d0c5f953d46238178617b4bfa90b43b0e78ebaee89d182c2200115c9cd188"
+        "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/translation-4.2.11/RU_PATCH_1_P.pak",
+        "urls": null,
+        "sha256": "8762b234586270e2768e68590d798433f9a5b8aebbc2f46e12a2f75cec93e3b4"
       },
       {
         "name": "~RU_QFONT.pak",
-        "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/translation-4.1.10/RU_QFONT.pak",
-        "urls": [],
+        "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/translation-4.2.11/RU_QFONT.pak",
+        "urls": null,
         "sha256": "6b564af9e47a3b7a4f43fb8ee449ac0c8a7b2c485e5828494dc2deb51d1119ef"
       }
     ]
