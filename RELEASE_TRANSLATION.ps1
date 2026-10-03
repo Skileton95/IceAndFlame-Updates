@@ -1,7 +1,7 @@
-﻿param(
+param(
     [Parameter(Position = 0)]
     [string]$Version,
-    [ValidateSet("stable", "beta", "dev")]
+    [ValidateSet("stable", "beta")]
     [string]$Channel = "stable",
     [string]$ReleaseNotes = "",
     [string]$MinPatcherVersion = "0.0.0",
@@ -350,6 +350,13 @@ try {
         }
     }
 
+    $verifyDir = Join-Path $tempDir "verify-assets"
+    New-Item -ItemType Directory -Path $verifyDir -Force | Out-Null
+    foreach ($file in $resolvedFiles) {
+        Invoke-Gh @("release", "download", $tag, "--repo", $Repo, "--pattern", $file.ReleaseName, "--dir", $verifyDir, "--clobber")
+        if ((Get-Sha256Lower (Join-Path $verifyDir $file.ReleaseName)) -ne $file.Sha256) { throw "Published asset SHA-256 mismatch." }
+    }
+
     Write-Step "Updating $ManifestName"
     Ensure-Property $manifest "schemaVersion" 3
     Ensure-Property $manifest "channel" $Channel
@@ -389,6 +396,7 @@ try {
         -not [string]::IsNullOrWhiteSpace($env:MANIFEST_SIGNING_PRIVATE_KEY_PEM) -and
         -not [string]::IsNullOrWhiteSpace($env:MANIFEST_SIGNING_PUBLIC_KEY_PEM)
 
+    if ($manifest.security.signatureRequired -and -not $signManifest) { throw "Refusing to disable required manifest signing." }
     $manifest.security.signatureRequired = $signManifest
     $manifest.security.signatureUrl = if ($signManifest) { "https://raw.githubusercontent.com/$Repo/$Branch/$ManifestName.sig" } else { "" }
     $manifest.security.publicKeyId = if ($signManifest) { "ice-and-flame-rsa-1" } else { "" }
@@ -413,13 +421,9 @@ try {
         if ($LASTEXITCODE -ne 0 -or -not (Test-Path $signaturePath)) { throw "Manifest signing failed." }
     }
 
-    Put-RemoteFile -Path $ManifestName -Message "Release $Channel translation $Version" -Bytes ([IO.File]::ReadAllBytes($manifestPath)) -ExistingSha $manifestSha
-
-    if ($signManifest) {
-        $signatureName = "$ManifestName.sig"
-        $signatureSha = Get-RemoteFileShaOptional $signatureName
-        Put-RemoteFile -Path $signatureName -Message "Sign $Channel translation manifest $Version" -Bytes ([IO.File]::ReadAllBytes($signaturePath)) -ExistingSha $signatureSha
-    }
+    $pendingFiles = @{ $ManifestName = $manifestPath }
+    $expectedHashes = @{ $ManifestName = $manifestSha }
+    if ($signManifest) { $pendingFiles["$ManifestName.sig"] = $signaturePath }
 
     $manifestNamesToVerify = @($ManifestName)
 
@@ -436,6 +440,7 @@ try {
 
         # Clone the translation object so Stable and Beta receive exactly the same
         # version, URLs and hashes without changing the Beta patcher channel.
+        if ($betaManifest.security.signatureRequired -and -not $signManifest) { throw "Beta requires signing keys; publication was not committed." }
         $betaManifest.translation = (($manifest.translation | ConvertTo-Json -Depth 40) | ConvertFrom-Json)
         $betaManifest.channel = "beta"
 
@@ -446,9 +451,21 @@ try {
         $betaLocalCheck = (Get-Content -LiteralPath $betaManifestPath -Raw) | ConvertFrom-Json
         Assert-TranslationManifest -Manifest $betaLocalCheck -Name $betaName -ExpectedFiles $resolvedFiles -ExpectedVersion $Version
 
-        Put-RemoteFile -Path $betaName -Message "Sync beta translation $Version" -Bytes ([IO.File]::ReadAllBytes($betaManifestPath)) -ExistingSha $betaRemote.Sha
+        $pendingFiles[$betaName] = $betaManifestPath
+        $expectedHashes[$betaName] = $betaRemote.Sha
+        if ($signManifest) {
+            $betaSignature = Join-Path $tempDir "$betaName.sig"
+            & dotnet run --project (Join-Path $PSScriptRoot "tools/ManifestSigner/ManifestSigner.csproj") --configuration Release -- sign $privateKey $betaManifestPath $betaSignature
+            if ($LASTEXITCODE -ne 0) { throw "Beta manifest signing failed." }
+            $pendingFiles["$betaName.sig"] = $betaSignature
+        }
         $manifestNamesToVerify += $betaName
     }
+
+    $metadataPath = Join-Path $tempDir "translation-manifest.json"
+    [IO.File]::WriteAllText($metadataPath, ($manifest.translation | ConvertTo-Json -Depth 40), [Text.UTF8Encoding]::new($false))
+    Invoke-Gh @("release", "upload", $tag, $metadataPath, "--repo", $Repo, "--clobber")
+    & (Join-Path $PSScriptRoot "tools/Commit-RemoteFiles.ps1") -Repo $Repo -Branch $Branch -Message "Release $Channel translation $Version" -Files $pendingFiles -ExpectedHashes $expectedHashes
 
     Write-Step "Verifying committed manifests"
     foreach ($name in $manifestNamesToVerify) {
