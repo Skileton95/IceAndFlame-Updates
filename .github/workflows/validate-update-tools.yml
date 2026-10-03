@@ -8,9 +8,9 @@ on:
       - "RELEASE_TRANSLATION.cmd"
       - "manifest.json"
       - "manifest-beta.json"
-      - "manifest-dev.json"
-      - "tools/ManifestSigner/**"
+      - "tools/**"
       - ".github/workflows/validate-update-tools.yml"
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -29,8 +29,7 @@ jobs:
       - name: Parse PowerShell publisher
         shell: pwsh
         run: |
-          $text = Get-Content "RELEASE_TRANSLATION.ps1" -Raw
-          [void][scriptblock]::Create($text)
+          foreach ($file in @("RELEASE_TRANSLATION.ps1", "tools/Commit-RemoteFiles.ps1")) { [void][scriptblock]::Create((Get-Content $file -Raw)) }
           Write-Host "RELEASE_TRANSLATION.ps1 syntax OK"
 
       - name: Build manifest signer
@@ -41,7 +40,7 @@ jobs:
       - name: Validate manifests
         shell: pwsh
         run: |
-          foreach ($path in @("manifest.json", "manifest-beta.json", "manifest-dev.json")) {
+          foreach ($path in @("manifest.json", "manifest-beta.json")) {
             $manifest = Get-Content $path -Raw | ConvertFrom-Json
 
             if ($manifest.schemaVersion -lt 3) { throw "${path}: schemaVersion must be >= 3" }
