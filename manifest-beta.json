@@ -7,12 +7,12 @@
     "publicKeyId": ""
   },
   "patcher": {
-    "version": "1.0.28",
-    "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-beta-1.0.28/WOJDPatcher-Beta.exe",
+    "version": "1.0.29",
+    "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-beta-1.0.29/WOJDPatcher-Beta.exe",
     "urls": [],
-    "sha256": "7f4e67e066f39b74faa609962635b2ffa1db16f4373d2335b2c2de8906de2b2a",
+    "sha256": "cb37146ef5dfe43bc12e777e126c103c5ff54dc95d582c14f020577db21185f3",
     "mandatory": false,
-    "releaseNotes": "1.0.28 BETA\r\n\r\n• Исправлена оставшаяся разница между CI и обычным пользовательским запуском WebView2.\r\n• MainWindow больше не создаётся с Opacity=0 и не переносится на 2000 пикселей за пределы виртуального экрана во время SplashWindow.\r\n• WebView2 теперь с первого Show() находится внутри реально видимого HWND-хоста с финальной геометрией и opacity 1, поэтому DirectComposition surface не создаётся в скрытом/off-screen состоянии.\r\n• SplashWindow теперь является отдельным полноразмерным окном поверх MainWindow и не скрывает нативный host WebView2; WPF boot surface остаётся поверх WebView до настоящего ready-handshake.\r\n• Это устраняет ключевую ветку запуска, которую CI smoke test не проверял: smoke test всегда запускался без SplashWindow и потому не воспроизводил пользовательское поведение.\r\n• Сохранена диагностика 1.0.27, включая webui-startup.log, Navigation/JS/resource события и DOM snapshot.\r\n• Сохранён утверждённый красно-бело-золотой интерфейс World of Jade Dynasty и размер окна 1100×620.\r\n• Stable-канал не изменяется.",
+    "releaseNotes": "1.0.29 BETA\r\n\r\n• Найдена и исправлена реальная причина пустого светло-бежевого окна по логу с пользовательского ПК.\r\n• В production index.html оставался скрытый geometry-test-shell перед #app. Финальный strict CSS переопределял его position:fixed правилом .window-shell, из-за чего невидимый тестовый блок становился обычным блоком размером 1100×620 и сдвигал настоящий #app ровно на 620 px вниз — полностью за пределы WebView.\r\n• Из production DOM полностью удалён geometry-test-shell и его дублирующиеся ID. Тестовая разметка больше не может участвовать в реальном интерфейсе или перехватывать document.getElementById/querySelector.\r\n• Paint probe теперь подтверждает готовность только если #app и реальная #app .window-shell находятся внутри видимого viewport, а не просто имеют правильные размеры и текст.\r\n• Сборка WebUI теперь аварийно завершается, если production index.html снова содержит geometry-test-shell или не содержит ровно один #app.\r\n• Сохранены исправления WebView2/SplashWindow и диагностика из 1.0.27–1.0.28.\r\n• Сохранён утверждённый красно-бело-золотой интерфейс World of Jade Dynasty и размер окна 1100×620.\r\n• Stable-канал не изменяется.",
     "rolloutPercent": 100,
     "blockedVersions": []
   },
@@ -44,5 +44,5 @@
     "diagnosticsUploadUrl": "",
     "statusUrl": ""
   },
-  "sourceCommit": "cc653fe09b2b605cf5fa21d7536b0954a591c94c"
+  "sourceCommit": "46e3147dc06a3992cdaa74fc8a4615a21f26841a"
 }
