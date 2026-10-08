@@ -7,12 +7,12 @@
     "publicKeyId": ""
   },
   "patcher": {
-    "version": "1.0.27",
-    "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-beta-1.0.27/WOJDPatcher-Beta.exe",
+    "version": "1.0.28",
+    "url": "https://github.com/Skileton95/IceAndFlame-Updates/releases/download/patcher-beta-1.0.28/WOJDPatcher-Beta.exe",
     "urls": [],
-    "sha256": "3e64456d9a0fc7bb5df760379701f80240fea046e51c6fbd6eb3987880fa1f46",
+    "sha256": "7f4e67e066f39b74faa609962635b2ffa1db16f4373d2335b2c2de8906de2b2a",
     "mandatory": false,
-    "releaseNotes": "1.0.27 BETA\r\n\r\n• Исправлена причина пустого светло-бежевого окна на реальных ПК: WebView2 больше не переводится в Hidden во время запуска и не теряет native compositor surface.\r\n• Обычный запуск больше не считает один NavigationCompleted/document.readyState доказательством готовности интерфейса — требуется реальный ready-handshake от app.js.\r\n• Добавлена подробная локальная диагностика WebView2: фактический URL, NavigationStarting/DOMContentLoaded/NavigationCompleted, WebErrorStatus, ProcessFailed, состояние WPF/WebView, размеры #app и .window-shell.\r\n• В журнал записываются ответы index.html, styles.css и app.js, локальные размеры и SHA-256 файлов WebUI, JS errors, resource errors и unhandledrejection.\r\n• В index.html добавлен ранний диагностический bootstrap, который ловит ошибки ещё до выполнения основного frontend bundle.\r\n• Исправлен stale cache WebUI: извлечённые ресурсы теперь валидируются не только по номеру версии, но и по MVID конкретной сборки, поэтому новая сборка не использует старые index.html/app.js/styles.css.\r\n• Сохранён утверждённый красно-бело-золотой интерфейс World of Jade Dynasty и размер основного окна 1100×620.\r\n• Stable-канал не изменяется.",
+    "releaseNotes": "1.0.28 BETA\r\n\r\n• Исправлена оставшаяся разница между CI и обычным пользовательским запуском WebView2.\r\n• MainWindow больше не создаётся с Opacity=0 и не переносится на 2000 пикселей за пределы виртуального экрана во время SplashWindow.\r\n• WebView2 теперь с первого Show() находится внутри реально видимого HWND-хоста с финальной геометрией и opacity 1, поэтому DirectComposition surface не создаётся в скрытом/off-screen состоянии.\r\n• SplashWindow теперь является отдельным полноразмерным окном поверх MainWindow и не скрывает нативный host WebView2; WPF boot surface остаётся поверх WebView до настоящего ready-handshake.\r\n• Это устраняет ключевую ветку запуска, которую CI smoke test не проверял: smoke test всегда запускался без SplashWindow и потому не воспроизводил пользовательское поведение.\r\n• Сохранена диагностика 1.0.27, включая webui-startup.log, Navigation/JS/resource события и DOM snapshot.\r\n• Сохранён утверждённый красно-бело-золотой интерфейс World of Jade Dynasty и размер окна 1100×620.\r\n• Stable-канал не изменяется.",
     "rolloutPercent": 100,
     "blockedVersions": []
   },
@@ -44,5 +44,5 @@
     "diagnosticsUploadUrl": "",
     "statusUrl": ""
   },
-  "sourceCommit": "e7171fcbb088fe3ee121579900684ab255b426b4"
+  "sourceCommit": "cc653fe09b2b605cf5fa21d7536b0954a591c94c"
 }
